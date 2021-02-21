@@ -28,8 +28,24 @@ protected:
 	
 	void Move_CameraPawn_Y(float AxisValue);
 
+	void ZoomReset();
+
+	void ZoomIn();
+
+	void ZoomOut();
+
+private:
+	// How close can the camera get to the root
+	float MinZoomLimit = 300.0f;
+
+	// How far can the camera move away from the root
+	float MaxZoomLimit = 4000.0f;
+
 public:
 	// This is a reference to our camera Pawn
 	ARTS_CameraPawn* CameraPawnRef;
+
+	// How fast the camera moves when zooming
+	float ZoomSpeed = 150.0f;
 
 };
