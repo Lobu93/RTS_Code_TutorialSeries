@@ -20,6 +20,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Begin PlayerController interface
+	virtual void SetupInputComponent() override;
+	// End PlayerController interface
+
+	void Move_CameraPawn_X(float AxisValue);
+	
+	void Move_CameraPawn_Y(float AxisValue);
+
 public:
 	// This is a reference to our camera Pawn
 	ARTS_CameraPawn* CameraPawnRef;

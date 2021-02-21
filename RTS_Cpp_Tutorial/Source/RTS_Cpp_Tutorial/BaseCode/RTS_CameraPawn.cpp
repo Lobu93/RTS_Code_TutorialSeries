@@ -26,6 +26,7 @@ ARTS_CameraPawn::ARTS_CameraPawn()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->TargetArmLength = 1500.0f;
+	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetupAttachment(Sphere);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
