@@ -34,6 +34,16 @@ protected:
 
 	void ZoomOut();
 
+	void PanPressed();
+	
+	void PanReleased();
+
+	void PanReset();
+
+	void MousePan_X(float AxisValue);
+
+	void MousePan_Y(float AxisValue);
+
 private:
 	// How close can the camera get to the root
 	float MinZoomLimit = 300.0f;
@@ -41,11 +51,20 @@ private:
 	// How far can the camera move away from the root
 	float MaxZoomLimit = 4000.0f;
 
+	// Determines if certain key has been pressed
+	bool bIsPressed;
+
+	// When mouse is pressed, the camera don't can move
+	bool bDisableCamMovement;
+
 public:
 	// This is a reference to our camera Pawn
 	ARTS_CameraPawn* CameraPawnRef;
 
 	// How fast the camera moves when zooming
 	float ZoomSpeed = 150.0f;
+
+	// How fast the camera can pans
+	float PanSpeed = 5.0f;
 
 };
