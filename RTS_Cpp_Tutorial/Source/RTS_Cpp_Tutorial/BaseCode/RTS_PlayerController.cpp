@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 // #include "Engine/World.h"
 
 // Called when the game starts or when spawned
@@ -40,26 +41,60 @@ void ARTS_PlayerController::SetupInputComponent()
 	InputComponent->BindAction("Pan", IE_Pressed, this, &ARTS_PlayerController::PanPressed);
 	InputComponent->BindAction("Pan", IE_Released, this, &ARTS_PlayerController::PanReleased);
 	InputComponent->BindAction("PanReset", IE_Pressed, this, &ARTS_PlayerController::PanReset);
+
+	InputComponent->BindAction("SpeedModifier", IE_Pressed, this, &ARTS_PlayerController::SpeedModifierPressed);
+	InputComponent->BindAction("SpeedModifier", IE_Released, this, &ARTS_PlayerController::SpeedModifierReleased);
 }
 
 void ARTS_PlayerController::Move_CameraPawn_X(float AxisValue)
 {
-	FVector AxisDirectionLocal = FVector(AxisValue, 0.0f, 0.0f);
+	float X_DirectionLocal;
+	FVector DirectionLocal;
+	FTransform ActorTransformLocal;
+	FVector LocationLocal;
+	FVector ActorNewLocation;
+	
+	X_DirectionLocal = (AxisValue * DefaultMovementSpeed) * MovementSpeedModifier;
+
+	DirectionLocal = FVector(X_DirectionLocal, 0.0f, 0.0f);
+
+	ActorTransformLocal = CameraPawnRef->GetActorTransform();
+
+	LocationLocal = UKismetMathLibrary::TransformDirection(ActorTransformLocal, DirectionLocal);
+
+	LocationLocal += ActorTransformLocal.GetLocation();
+
+	ActorTransformLocal = FTransform(ActorTransformLocal.GetRotation(), LocationLocal, ActorTransformLocal.GetScale3D());
+
+	ActorNewLocation = FVector(ActorTransformLocal.GetLocation().X, ActorTransformLocal.GetLocation().Y, 200.0f);
 
 	if (!bDisableCamMovement)
 	{
-		CameraPawnRef->FloatingPawnMovement->AddInputVector(AxisDirectionLocal);
+		CameraPawnRef->SetActorLocation(ActorNewLocation);
 	}
 }
 
 void ARTS_PlayerController::Move_CameraPawn_Y(float AxisValue)
 {
-	FVector AxisDirectionLocal = FVector(0.0f, AxisValue, 0.0f);
+	float Y_DirectionLocal;
+	FVector DirectionLocal;
+	FTransform ActorTransformLocal;
+	FVector ActorNewLocation;
+
+	Y_DirectionLocal = AxisValue * (DefaultMovementSpeed * MovementSpeedModifier);
+
+	DirectionLocal = FVector(0.0f, Y_DirectionLocal , 0.0f);
+
+	ActorTransformLocal = CameraPawnRef->GetActorTransform();
+
+	ActorNewLocation = UKismetMathLibrary::TransformDirection(ActorTransformLocal, DirectionLocal);
+
+	ActorNewLocation += ActorTransformLocal.GetLocation();
 
 	if (!bDisableCamMovement)
 	{
-		CameraPawnRef->FloatingPawnMovement->AddInputVector(AxisDirectionLocal);
-	}	
+		CameraPawnRef->SetActorLocation(ActorNewLocation);
+	}
 }
 
 void ARTS_PlayerController::ZoomReset()
@@ -87,15 +122,11 @@ void ARTS_PlayerController::ZoomOut()
 
 void ARTS_PlayerController::PanPressed()
 {
-	bIsPressed = true;
-
 	bDisableCamMovement = true;
 }
 
 void ARTS_PlayerController::PanReleased()
 {
-	bIsPressed = false;
-
 	bDisableCamMovement = false;
 }
 
@@ -124,10 +155,7 @@ void ARTS_PlayerController::MousePan_X(float AxisValue)
 
 	NewRotationLocal = FRotator(ActorRotationLocal.Pitch, YawLocal, ActorRotationLocal.Roll);
 
-	if (bIsPressed)
-	{
-		CameraPawnRef->SetActorRotation(NewRotationLocal);
-	}
+	CameraPawnRef->SetActorRotation(NewRotationLocal);
 }
 
 void ARTS_PlayerController::MousePan_Y(float AxisValue)
@@ -144,8 +172,15 @@ void ARTS_PlayerController::MousePan_Y(float AxisValue)
 
 	NewRotationLocal = FRotator(PitchLocal, ActorRotationLocal.Yaw, ActorRotationLocal.Roll);
 
-	if (bIsPressed)
-	{
-		CameraPawnRef->SetActorRotation(NewRotationLocal);
-	}
+	CameraPawnRef->SetActorRotation(NewRotationLocal);
+}
+
+void ARTS_PlayerController::SpeedModifierPressed()
+{
+	MovementSpeedModifier = 2.0f;
+}
+
+void ARTS_PlayerController::SpeedModifierReleased()
+{
+	MovementSpeedModifier = 1.0f;
 }

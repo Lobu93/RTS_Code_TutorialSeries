@@ -44,15 +44,16 @@ protected:
 
 	void MousePan_Y(float AxisValue);
 
+	void SpeedModifierPressed();
+
+	void SpeedModifierReleased();
+
 private:
 	// How close can the camera get to the root
 	float MinZoomLimit = 300.0f;
 
 	// How far can the camera move away from the root
 	float MaxZoomLimit = 4000.0f;
-
-	// Determines if certain key has been pressed
-	bool bIsPressed;
 
 	// When mouse is pressed, the camera don't can move
 	bool bDisableCamMovement;
@@ -67,4 +68,9 @@ public:
 	// How fast the camera can pans
 	float PanSpeed = 5.0f;
 
+	// How fast the camera moves
+	float DefaultMovementSpeed = 15.0f;
+
+	// Modify default movement speed
+	float MovementSpeedModifier = 1.0f;
 };
