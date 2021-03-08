@@ -48,6 +48,11 @@ protected:
 
 	void SpeedModifierReleased();
 
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	FVector EdgeScroll();
+
+	// void MouseScroll(float AxisValue);
+
 private:
 	// How close can the camera get to the root
 	float MinZoomLimit = 300.0f;
@@ -55,11 +60,13 @@ private:
 	// How far can the camera move away from the root
 	float MaxZoomLimit = 4000.0f;
 
-	// When mouse is pressed, the camera don't can move
-	bool bDisableCamMovement;
+	float EdgeScrollSpeedX;
+
+	float EdgeScrollSpeedY;
 
 public:
 	// This is a reference to our camera Pawn
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 	ARTS_CameraPawn* CameraPawnRef;
 
 	// How fast the camera moves when zooming
@@ -73,4 +80,10 @@ public:
 
 	// Modify default movement speed
 	float MovementSpeedModifier = 1.0f;
+
+	// When mouse is pressed, the camera don't can move
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool bDisableCamMovement;
+
+	FVector2D MouseLastValidPosition;
 };

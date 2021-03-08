@@ -7,7 +7,8 @@
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-// #include "Engine/World.h"
+#include "Engine/World.h"
+
 
 // Called when the game starts or when spawned
 void ARTS_PlayerController::BeginPlay()
@@ -22,6 +23,14 @@ void ARTS_PlayerController::BeginPlay()
 	}
 
 	bShowMouseCursor = true;
+
+	bEnableClickEvents = true;
+
+	bEnableMouseOverEvents = true;
+
+	DefaultMouseCursor = EMouseCursor::Hand;
+
+	// SetInputMode(FInputModeGameAndUI());
 }
 
 void ARTS_PlayerController::SetupInputComponent()
@@ -44,6 +53,7 @@ void ARTS_PlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("SpeedModifier", IE_Pressed, this, &ARTS_PlayerController::SpeedModifierPressed);
 	InputComponent->BindAction("SpeedModifier", IE_Released, this, &ARTS_PlayerController::SpeedModifierReleased);
+
 }
 
 void ARTS_PlayerController::Move_CameraPawn_X(float AxisValue)
@@ -149,13 +159,20 @@ void ARTS_PlayerController::MousePan_X(float AxisValue)
 	FRotator ActorRotationLocal;
 	float YawLocal;
 
-	ActorRotationLocal = CameraPawnRef->GetActorRotation();
+	if (bDisableCamMovement)
+	{
+		ActorRotationLocal = CameraPawnRef->GetActorRotation();
 
-	YawLocal = ActorRotationLocal.Yaw + (AxisValue * PanSpeed);
+		YawLocal = ActorRotationLocal.Yaw + (AxisValue * PanSpeed);
 
-	NewRotationLocal = FRotator(ActorRotationLocal.Pitch, YawLocal, ActorRotationLocal.Roll);
+		NewRotationLocal = FRotator(ActorRotationLocal.Pitch, YawLocal, ActorRotationLocal.Roll);
 
-	CameraPawnRef->SetActorRotation(NewRotationLocal);
+		CameraPawnRef->SetActorRotation(NewRotationLocal);
+	}
+	else
+	{
+		CameraPawnRef->AddActorLocalOffset(EdgeScroll(), true);
+	}
 }
 
 void ARTS_PlayerController::MousePan_Y(float AxisValue)
@@ -164,15 +181,22 @@ void ARTS_PlayerController::MousePan_Y(float AxisValue)
 	FRotator ActorRotationLocal;
 	float PitchLocal;
 
-	ActorRotationLocal = CameraPawnRef->GetActorRotation();
+	if (bDisableCamMovement)
+	{
+		ActorRotationLocal = CameraPawnRef->GetActorRotation();
 
-	PitchLocal = ActorRotationLocal.Pitch + (AxisValue * PanSpeed);
+		PitchLocal = ActorRotationLocal.Pitch + (AxisValue * PanSpeed);
 
-	PitchLocal = FMath::Clamp(PitchLocal, -25.0f, 45.0f);
+		PitchLocal = FMath::Clamp(PitchLocal, -25.0f, 45.0f);
 
-	NewRotationLocal = FRotator(PitchLocal, ActorRotationLocal.Yaw, ActorRotationLocal.Roll);
+		NewRotationLocal = FRotator(PitchLocal, ActorRotationLocal.Yaw, ActorRotationLocal.Roll);
 
-	CameraPawnRef->SetActorRotation(NewRotationLocal);
+		CameraPawnRef->SetActorRotation(NewRotationLocal);
+	}
+	else
+	{
+		CameraPawnRef->AddActorLocalOffset(EdgeScroll(), true);
+	}
 }
 
 void ARTS_PlayerController::SpeedModifierPressed()
@@ -183,4 +207,83 @@ void ARTS_PlayerController::SpeedModifierPressed()
 void ARTS_PlayerController::SpeedModifierReleased()
 {
 	MovementSpeedModifier = 1.0f;
+}
+
+FVector ARTS_PlayerController::EdgeScroll()
+{
+	float Proportion_X_Local;
+	float Proportion_Y_Local;
+	float DeltaSpeed_X;
+	float DeltaSpeed_Y;
+	FVector2D MousePositionLocal;
+
+	if (GetMousePosition(MousePositionLocal.X, MousePositionLocal.Y))
+	{
+		MouseLastValidPosition = MousePositionLocal;
+	}
+	else
+	{
+		MousePositionLocal = MouseLastValidPosition;
+	}
+
+	const FVector2D ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
+
+	Proportion_X_Local = MousePositionLocal.X / ViewportSize.X;
+
+	Proportion_Y_Local = MousePositionLocal.Y / ViewportSize.Y;
+
+	if (Proportion_X_Local >= 0.975f)
+	{
+		EdgeScrollSpeedX = 15.0f;
+		
+		FString MessageString = FString("Move Right. Because of Mouse X value is ");
+
+		MessageString.AppendInt(MousePositionLocal.X);
+		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::White, MessageString);
+	}
+	else if (Proportion_X_Local <= 0.025f)
+	{
+		EdgeScrollSpeedX = -15.0f;
+
+		FString MessageString = FString("Move Left. Because of Mouse X value is ");
+
+		MessageString.AppendInt(MousePositionLocal.X);
+		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Black, MessageString);
+	}
+	else
+	{
+		EdgeScrollSpeedX = 0.0f;
+	}
+	
+	if (Proportion_Y_Local >= 0.975f)
+	{
+		EdgeScrollSpeedY = -15.0f;
+
+		FString MessageString = FString("Move Down. Because of Mouse Y value is ");
+
+		MessageString.AppendInt(MousePositionLocal.Y);
+		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Blue, MessageString);
+	}
+	else if (Proportion_Y_Local <= 0.025f)
+	{
+		EdgeScrollSpeedY = 15.0f;
+
+		FString MessageString = FString("Move Up. Because of Mouse Y value is ");
+
+		MessageString.AppendInt(MousePositionLocal.Y);
+		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Red, MessageString);
+	}
+	else
+	{
+		EdgeScrollSpeedY = 0.0f;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("ARTS_PlayerController::EdgeScroll() | EdgeScrollSpeed_X: %f EdgeScrollSpeed_Y: %f"),
+		EdgeScrollSpeedX, EdgeScrollSpeedY);
+
+	DeltaSpeed_X = EdgeScrollSpeedY * MovementSpeedModifier;
+
+	DeltaSpeed_Y = EdgeScrollSpeedX * MovementSpeedModifier;
+
+	return FVector(DeltaSpeed_X, DeltaSpeed_Y, 0.0f);
 }
