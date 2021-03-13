@@ -30,7 +30,6 @@ void ARTS_PlayerController::BeginPlay()
 
 	DefaultMouseCursor = EMouseCursor::Hand;
 
-	// SetInputMode(FInputModeGameAndUI());
 }
 
 void ARTS_PlayerController::SetupInputComponent()
@@ -80,7 +79,7 @@ void ARTS_PlayerController::Move_CameraPawn_X(float AxisValue)
 
 	if (!bDisableCamMovement)
 	{
-		CameraPawnRef->SetActorLocation(ActorNewLocation);
+		CameraPawnRef->SetActorLocation(ActorNewLocation, true);
 	}
 }
 
@@ -91,7 +90,7 @@ void ARTS_PlayerController::Move_CameraPawn_Y(float AxisValue)
 	FTransform ActorTransformLocal;
 	FVector ActorNewLocation;
 
-	Y_DirectionLocal = AxisValue * (DefaultMovementSpeed * MovementSpeedModifier);
+	Y_DirectionLocal = AxisValue * (MovementSpeedModifier * DefaultMovementSpeed);
 
 	DirectionLocal = FVector(0.0f, Y_DirectionLocal , 0.0f);
 
@@ -103,7 +102,7 @@ void ARTS_PlayerController::Move_CameraPawn_Y(float AxisValue)
 
 	if (!bDisableCamMovement)
 	{
-		CameraPawnRef->SetActorLocation(ActorNewLocation);
+		CameraPawnRef->SetActorLocation(ActorNewLocation, true);
 	}
 }
 
@@ -234,21 +233,21 @@ FVector ARTS_PlayerController::EdgeScroll()
 
 	if (Proportion_X_Local >= 0.975f)
 	{
-		EdgeScrollSpeedX = 15.0f;
+		EdgeScrollSpeedX = 10.0f;
 		
-		FString MessageString = FString("Move Right. Because of Mouse X value is ");
+		/*FString MessageString = FString("Move Right. Because of Mouse X value is ");
 
 		MessageString.AppendInt(MousePositionLocal.X);
-		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::White, MessageString);
+		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::White, MessageString);*/
 	}
 	else if (Proportion_X_Local <= 0.025f)
 	{
-		EdgeScrollSpeedX = -15.0f;
+		EdgeScrollSpeedX = -10.0f;
 
-		FString MessageString = FString("Move Left. Because of Mouse X value is ");
+		/*FString MessageString = FString("Move Left. Because of Mouse X value is ");
 
 		MessageString.AppendInt(MousePositionLocal.X);
-		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Black, MessageString);
+		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Black, MessageString);*/
 	}
 	else
 	{
@@ -257,29 +256,29 @@ FVector ARTS_PlayerController::EdgeScroll()
 	
 	if (Proportion_Y_Local >= 0.975f)
 	{
-		EdgeScrollSpeedY = -15.0f;
+		EdgeScrollSpeedY = -10.0f;
 
-		FString MessageString = FString("Move Down. Because of Mouse Y value is ");
+		/*FString MessageString = FString("Move Down. Because of Mouse Y value is ");
 
 		MessageString.AppendInt(MousePositionLocal.Y);
-		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Blue, MessageString);
+		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Blue, MessageString);*/
 	}
 	else if (Proportion_Y_Local <= 0.025f)
 	{
-		EdgeScrollSpeedY = 15.0f;
+		EdgeScrollSpeedY = 10.0f;
 
-		FString MessageString = FString("Move Up. Because of Mouse Y value is ");
+		/*FString MessageString = FString("Move Up. Because of Mouse Y value is ");
 
 		MessageString.AppendInt(MousePositionLocal.Y);
-		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Red, MessageString);
+		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Red, MessageString); */
 	}
 	else
 	{
 		EdgeScrollSpeedY = 0.0f;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("ARTS_PlayerController::EdgeScroll() | EdgeScrollSpeed_X: %f EdgeScrollSpeed_Y: %f"),
-		EdgeScrollSpeedX, EdgeScrollSpeedY);
+	/*UE_LOG(LogTemp, Warning, TEXT("ARTS_PlayerController::EdgeScroll() | EdgeScrollSpeed_X: %f EdgeScrollSpeed_Y: %f"),
+		EdgeScrollSpeedX, EdgeScrollSpeedY);*/
 
 	DeltaSpeed_X = EdgeScrollSpeedY * MovementSpeedModifier;
 

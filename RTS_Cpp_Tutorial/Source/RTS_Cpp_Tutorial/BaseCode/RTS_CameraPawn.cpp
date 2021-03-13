@@ -15,16 +15,13 @@ ARTS_CameraPawn::ARTS_CameraPawn()
 	// Set this pawn to be controlled by the lowest-numbered player
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	
-	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
-	SetRootComponent(Scene);
-
 	Sphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sphere"));
-	Sphere->SetupAttachment(RootComponent);
+	SetRootComponent(Sphere);
 	Sphere->bEditableWhenInherited = true;
 	Sphere->SetWorldScale3D(FVector(0.25f, 0.25f, 0.25f));
-	Sphere->SetRelativeRotation(FQuat(FRotator(-70.0f, 0.0f, 0.0f)));
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->SetRelativeRotation(FQuat(FRotator(-70.0f, 0.0f, 0.0f)));
 	SpringArm->TargetArmLength = 1500.0f;
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetupAttachment(Sphere);

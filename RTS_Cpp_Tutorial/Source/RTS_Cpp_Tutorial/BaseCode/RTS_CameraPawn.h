@@ -27,9 +27,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class USceneComponent* Scene;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	class UStaticMeshComponent* Sphere;
 
