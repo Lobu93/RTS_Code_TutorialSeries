@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
-#include "RTS_GameTime_IF.h"
+#include "../Library/RTS_GameTime_IF.h"
 #include "RTS_GameState.generated.h"
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FGameSpeedControl, float, InGameTime);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameSpeedControl, float, InGameTime);
 
 class ARTS_PlayerController;
 
@@ -45,6 +45,8 @@ public:
 
 	ARTS_PlayerController* ControllerRef;
 
+	// bool bIsImplemented;
+
 	int32 Day = 28;
 	UPROPERTY(EditAnywhere, Category = "Calendar", meta = (ClampMin = "1.0", ClampMax = "12.0", UIMin = "1.0", UIMax = "12.0"))
 	int32 Month = 3;
@@ -54,10 +56,12 @@ public:
 	int32 Seconds; // int variable that holds seconds game time
 
 	//Event Dispatcher
-	//UPROPERTY(BlueprintAssignable, Category = "Event Dispatcher")
+	UPROPERTY(BlueprintAssignable, Category = "Event Dispatcher")
 	FGameSpeedControl GameSpeedControl_Delegate;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Game Speed Settings")
-		bool FunctionUpdateGameSpeed(float InSpeedMuntiplier);
-	virtual bool FunctionUpdateGameSpeed_Implementation(float InSpeedMuntiplier) override;
+		bool FunctionUpdateGameSpeed(float InSpeedMultiplier);
+	virtual bool FunctionUpdateGameSpeed_Implementation(float InSpeedMultiplier) override;
+
+	float GetGameSpeed();
 };

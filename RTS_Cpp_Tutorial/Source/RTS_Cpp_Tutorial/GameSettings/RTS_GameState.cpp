@@ -2,10 +2,10 @@
 
 
 #include "RTS_GameState.h"
-#include "RTS_PlayerController.h"
-#include "RTS_FuncLib.h"
+#include "../Player/RTS_PlayerController.h"
+#include "../Library/RTS_FuncLib.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "RTS_GameTime_IF.h"
+#include "../Library/RTS_GameTime_IF.h"
 
 
 ARTS_GameState::ARTS_GameState()
@@ -28,14 +28,12 @@ void ARTS_GameState::BeginPlay()
 
 	GameSpeed = DefaultGameSpeed;
 
-	bool bIsImplemented;
+	//bIsImplemented = this->GetClass()->ImplementsInterface(URTS_GameTime_IF::StaticClass());
 
-	bIsImplemented = this->GetClass()->ImplementsInterface(URTS_GameTime_IF::StaticClass());
-
-	if (bIsImplemented)
+	/*if (bIsImplemented)
 	{
-		IRTS_GameTime_IF::Execute_FunctionUpdateGameSpeed(this, 666.0f);
-	}
+		IRTS_GameTime_IF::Execute_FunctionUpdateGameSpeed(this, GameTime);
+	}*/
 }
 
 // Called every frame
@@ -50,15 +48,18 @@ void ARTS_GameState::Tick(float DeltaTime)
 	SetCalendar();
 }
 
-bool ARTS_GameState::FunctionUpdateGameSpeed_Implementation(float InSpeedMuntiplier)
+bool ARTS_GameState::FunctionUpdateGameSpeed_Implementation(float InSpeedMultiplier)
 {
-	SpeedMultiplier = InSpeedMuntiplier;
+	SpeedMultiplier = InSpeedMultiplier;
 
 	GameTime = SpeedMultiplier * DefaultGameSpeed;
 
-	GameSpeedControl_Delegate.ExecuteIfBound(GameTime);
+	if (GameSpeedControl_Delegate.IsBound())
+	{
+		GameSpeedControl_Delegate.Broadcast(GameTime);
+	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Message: %f"), SpeedMultiplier);
+	UE_LOG(LogTemp, Warning, TEXT("ARTS_GameState::FunctionUpdateGameSpeed_Implementation() | Message: %f"), SpeedMultiplier);
 
 	return false;
 }
@@ -162,4 +163,9 @@ void ARTS_GameState::SetCalendar()
 	MessageString.Append(TEXT("/"));
 	MessageString.AppendInt(GameDate[2]);
 	GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Red, MessageString);
+}
+
+float ARTS_GameState::GetGameSpeed()
+{
+	return GameSpeed;
 }
