@@ -7,6 +7,7 @@
 #include "RTS_PlayerController.generated.h"
 
 class ARTS_CameraPawn;
+class ARTS_GameState;
 
 /**
  * 
@@ -51,7 +52,8 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	FVector EdgeScroll();
 
-	// void MouseScroll(float AxisValue);
+	// Cast references once for the entire code, reduce system drain.
+	void ReferenceCasts();
 
 private:
 	// How close can the camera get to the root
@@ -68,6 +70,8 @@ public:
 	// This is a reference to our camera Pawn
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 	ARTS_CameraPawn* CameraPawnRef;
+
+	ARTS_GameState* GameStateRef;
 
 	// How fast the camera moves when zooming
 	float ZoomSpeed = 150.0f;

@@ -32,9 +32,10 @@ protected:
 	void SetCalendar();
 
 private:
-	float GameSpeed = 150.0f;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
+	//float GameSpeed = 0.25f; // For debug change: 150.0f;
 	float GameTime;
-	float DefaultGameSpeed = 0.025f; // 150.0f;
+	float DefaultGameSpeed = 0.25f; // For debug change: 150.0f;
 	float SpeedMultiplier = 1.0f;
 	int32 DayCounter;
 	TArray<int32> GameDate;
@@ -47,7 +48,10 @@ public:
 
 	// bool bIsImplemented;
 
-	int32 Day = 28;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameSpeedSettings")
+	float GameSpeed = 0.25f; // For debug change: 150.0f;
+
+	int32 Day = 17;
 	UPROPERTY(EditAnywhere, Category = "Calendar", meta = (ClampMin = "1.0", ClampMax = "12.0", UIMin = "1.0", UIMax = "12.0"))
 	int32 Month = 3;
 	int32 Year = 2021;
@@ -63,5 +67,6 @@ public:
 		bool FunctionUpdateGameSpeed(float InSpeedMultiplier);
 	virtual bool FunctionUpdateGameSpeed_Implementation(float InSpeedMultiplier) override;
 
+	UFUNCTION(BlueprintCallable)
 	float GetGameSpeed();
 };

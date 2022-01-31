@@ -46,6 +46,8 @@ void ARTS_GameState::Tick(float DeltaTime)
 	SetClock();
 
 	SetCalendar();
+
+	// UE_LOG(LogTemp, Warning, TEXT("ARTS_GameState::Tick() | Updated GameTime: %f"), GameTime);
 }
 
 bool ARTS_GameState::FunctionUpdateGameSpeed_Implementation(float InSpeedMultiplier)

@@ -25,16 +25,9 @@ void ASunRotation::BeginPlay()
 
 	if (GameStateRef)
 	{
-		//UDamageType* dmgType = NewObject<UDamageType>(DamageTypeClass);
+		GameStateRef->GameSpeedControl_Delegate.AddDynamic(this, &ASunRotation::GetGameSpeed);
 
-		// SunRef = NewObject<ADirectionalLight>(SunRef);
-
-		if (GameStateRef->GameSpeedControl_Delegate.IsBound())
-		{
-			GameStateRef->GameSpeedControl_Delegate.AddDynamic(this, &ASunRotation::GetGameSpeed);
-
-			GameSpeed = GameStateRef->GetGameSpeed();
-		}
+		GameSpeed = GameStateRef->GetGameSpeed();
 	}
 }
 
@@ -58,7 +51,9 @@ void ASunRotation::Tick(float DeltaTime)
 
 	Y_PitchLocal /= 6.0f;
 
-	Y_PitchLocal /= 90.0f;
+	// UE_LOG(LogTemp, Warning, TEXT("void ASunRotation::Tick() | Y_PitchLocal pre *= 90: %f"), Y_PitchLocal);
+
+	Y_PitchLocal *= 90.0f;
 
 	SunRef->AddActorLocalRotation(FRotator(Y_PitchLocal, 0.0f, 0.0f));
 }

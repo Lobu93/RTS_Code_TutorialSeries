@@ -19,16 +19,13 @@ public:
 	ASunRotation();
 
 private:
-	ARTS_GameState* GameStateRef;
-
-	float GameSpeed;
-
 	float GameTime;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable)
 	void GetGameSpeed(float InGameSpeed);
 
 public:	
@@ -38,32 +35,15 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class USceneComponent* Scene;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
+	ARTS_GameState* GameStateRef;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
 	ADirectionalLight* SunRef;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
 	AActor* SkySphereRef;
 
-	// ADirectionalLight* SunRef;
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
-	TSubclassOf<ADirectionalLight> SunClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
-	TSubclassOf<AActor> SkySphereRef;*/
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
-	UClass* SunClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
-	UClass* SkySphereRef;*/
-
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "References")
-	//ARTS_GameState* GameStateRef;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time")
-	//float GameSpeed;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time")
-	//float GameTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time")
+	float GameSpeed;
 };

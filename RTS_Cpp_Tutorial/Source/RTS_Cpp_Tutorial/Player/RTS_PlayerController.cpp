@@ -3,6 +3,7 @@
 
 #include "RTS_PlayerController.h"
 #include "RTS_CameraPawn.h"
+#include "../GameSettings/RTS_GameState.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -15,12 +16,7 @@ void ARTS_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Cast references once for the entire code, reduce system drain.
-	CameraPawnRef = (ARTS_CameraPawn*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (!CameraPawnRef)
-	{
-		UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::BeginPlay() Bad CameraPawn Class"));
-	}
+	ReferenceCasts();
 
 	bShowMouseCursor = true;
 
@@ -285,4 +281,20 @@ FVector ARTS_PlayerController::EdgeScroll()
 	DeltaSpeed_Y = EdgeScrollSpeedX * MovementSpeedModifier;
 
 	return FVector(DeltaSpeed_X, DeltaSpeed_Y, 0.0f);
+}
+
+void ARTS_PlayerController::ReferenceCasts()
+{
+	CameraPawnRef = (ARTS_CameraPawn*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (!CameraPawnRef)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::BeginPlay() Bad CameraPawn Class"));
+	}
+
+	// GameStateRef = (ARTS_GameState*)UGameplayStatics::GetGameState(GetWorld());
+	GameStateRef = (ARTS_GameState*)GetWorld()->GetGameState();
+	if (!GameStateRef)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::BeginPlay() Bad GameState Class"));
+	}
 }
