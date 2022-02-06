@@ -76,7 +76,7 @@ void ARTS_GameState::ReferenceCasts()
 	}
 }
 
-void ARTS_GameState::SetClock()
+void ARTS_GameState::SetClock_Implementation()
 {
 	float DividendLocal;
 	float DivisorSecsAndMinsLocal = 60.0f;
@@ -125,7 +125,7 @@ void ARTS_GameState::SetClock()
 	GEngine->AddOnScreenDebugMessage(-1, 30, FColor::White, MessageString);
 }
 
-void ARTS_GameState::SetCalendar()
+void ARTS_GameState::SetCalendar_Implementation()
 {
 	int32 DaysInMonthLocal;
 

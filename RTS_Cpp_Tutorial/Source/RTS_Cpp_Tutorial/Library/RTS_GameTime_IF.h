@@ -22,6 +22,16 @@ class RTS_CPP_TUTORIAL_API IRTS_GameTime_IF
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	// TArray<int32> GameCalendar;
+
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interface")
 	bool FunctionUpdateGameSpeed(float InSpeedMuntiplier);
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Interface")
+	bool SetGameClock(UPARAM(ref) TArray<int32>& InGameTime);
+	bool SetGameClock_Implementation(TArray<int32> InGameTime);
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Interface")
+	bool SetGameCalendar(UPARAM(ref) TArray<int32>& GameCalendar);
+	bool SetGameCalendar_Implementation(TArray<int32> InGameCalendar);
 };

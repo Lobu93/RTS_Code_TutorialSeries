@@ -17,5 +17,5 @@ class RTS_CPP_TUTORIAL_API URTS_FuncLib : public UBlueprintFunctionLibrary
 public:
 	// This is a function to help run and pass game time using hours
 	UFUNCTION(BlueprintCallable, Category = "Library")
-	static float SetGameTime(float DeltaTime, float GameSpeed, float InitialGameTime, int32& DayCount);
+		static float SetGameTime(float DeltaTime, float GameSpeed, float InitialGameTime, int32& DayCount);
 };
