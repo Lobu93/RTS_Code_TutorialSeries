@@ -18,3 +18,14 @@ enum class EMonthNames : uint8
 	November,
 	December
 };
+
+UENUM(BlueprintType)
+enum class EGameSpeedSettings : uint8
+{
+	Speed_0,
+	Speed_1,
+	Speed_2,
+	Speed_3,
+	Speed_4,
+	Speed_5
+};

@@ -41,27 +41,28 @@ void ARTS_GameState::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	GameTime = URTS_FuncLib::SetGameTime(DeltaTime, GameSpeed, GameTime, DayCounter);
+	if (GameSpeed > 0.0f)
+	{
+		GameTime = URTS_FuncLib::SetGameTime(DeltaTime, GameSpeed, GameTime, DayCounter);
 
-	SetClock();
+		SetClock();
 
-	SetCalendar();
-
-	// UE_LOG(LogTemp, Warning, TEXT("ARTS_GameState::Tick() | Updated GameTime: %f"), GameTime);
+		SetCalendar();
+	}
 }
 
 bool ARTS_GameState::FunctionUpdateGameSpeed_Implementation(float InSpeedMultiplier)
 {
 	SpeedMultiplier = InSpeedMultiplier;
 
-	GameTime = SpeedMultiplier * DefaultGameSpeed;
+	GameSpeed = SpeedMultiplier * DefaultGameSpeed;
 
 	if (GameSpeedControl_Delegate.IsBound())
 	{
-		GameSpeedControl_Delegate.Broadcast(GameTime);
+		GameSpeedControl_Delegate.Broadcast(GameSpeed);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("ARTS_GameState::FunctionUpdateGameSpeed_Implementation() | Message: %f"), SpeedMultiplier);
+	// UE_LOG(LogTemp, Warning, TEXT("ARTS_GameState::FunctionUpdateGameSpeed_Implementation() | Message: %f"), SpeedMultiplier);
 
 	return false;
 }
@@ -115,14 +116,14 @@ void ARTS_GameState::SetClock_Implementation()
 	GameDate[2] = Hours;
 
 	// Debug session
-	FString MessageString; // = FString("Move Right. Because of Mouse X value is ");
+	//FString MessageString; // = FString("Move Right. Because of Mouse X value is ");
 
-	MessageString.AppendInt(GameDate[2]);
-	MessageString.Append(TEXT(":"));
-	MessageString.AppendInt(GameDate[1]);
-	MessageString.Append(TEXT(":"));
-	MessageString.AppendInt(GameDate[0]);
-	GEngine->AddOnScreenDebugMessage(-1, 30, FColor::White, MessageString);
+	//MessageString.AppendInt(GameDate[2]);
+	//MessageString.Append(TEXT(":"));
+	//MessageString.AppendInt(GameDate[1]);
+	//MessageString.Append(TEXT(":"));
+	//MessageString.AppendInt(GameDate[0]);
+	//GEngine->AddOnScreenDebugMessage(-1, 30, FColor::White, MessageString);
 }
 
 void ARTS_GameState::SetCalendar_Implementation()
@@ -157,14 +158,14 @@ void ARTS_GameState::SetCalendar_Implementation()
 	GameDate[2] = Year;
 
 	// Debug session
-	FString MessageString;
+	/*FString MessageString;
 
 	MessageString.AppendInt(GameDate[0]);
 	MessageString.Append(TEXT("/"));
 	MessageString.AppendInt(GameDate[1]);
 	MessageString.Append(TEXT("/"));
 	MessageString.AppendInt(GameDate[2]);
-	GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Red, MessageString);
+	GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Red, MessageString);*/
 }
 
 float ARTS_GameState::GetGameSpeed()
