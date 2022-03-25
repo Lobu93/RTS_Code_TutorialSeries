@@ -26,6 +26,10 @@ void ARTS_GameState::BeginPlay()
 	GameDate.Add(Month);
 	GameDate.Add(Year);
 
+	GameHour.Add(0);
+	GameHour.Add(0);
+	GameHour.Add(Hours);
+
 	GameSpeed = DefaultGameSpeed;
 
 	//bIsImplemented = this->GetClass()->ImplementsInterface(URTS_GameTime_IF::StaticClass());
@@ -41,14 +45,20 @@ void ARTS_GameState::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (GameSpeed > 0.0f)
+	/*if (GameSpeed > 0.0f)
 	{
 		GameTime = URTS_FuncLib::SetGameTime(DeltaTime, GameSpeed, GameTime, DayCounter);
 
 		SetClock();
 
 		SetCalendar();
-	}
+	}*/
+
+	GameTime = URTS_FuncLib::SetGameTime(DeltaTime, GameSpeed, GameTime, DayCounter);
+
+	SetClock();
+
+	SetCalendar();
 }
 
 bool ARTS_GameState::FunctionUpdateGameSpeed_Implementation(float InSpeedMultiplier)
@@ -62,9 +72,9 @@ bool ARTS_GameState::FunctionUpdateGameSpeed_Implementation(float InSpeedMultipl
 		GameSpeedControl_Delegate.Broadcast(GameSpeed);
 	}
 
-	// UE_LOG(LogTemp, Warning, TEXT("ARTS_GameState::FunctionUpdateGameSpeed_Implementation() | Message: %f"), SpeedMultiplier);
+	// UE_LOG(LogTemp, Warning, TEXT("ARTS_GameState::FunctionUpdateGameSpeed_Implementation() | SpeedMultiplier: %f GameSpeed: %f"), SpeedMultiplier, GameSpeed);
 
-	return false;
+	return true;
 }
 
 void ARTS_GameState::ReferenceCasts()
@@ -106,24 +116,40 @@ void ARTS_GameState::SetClock_Implementation()
 
 	Hours = UKismetMathLibrary::FFloor(RemainderLocal);
 
+	//// Make GameDate array Seconds slot
+	//GameDate[0] = Seconds;
+
+	//// Make GameDate array Minutes slot
+	//GameDate[1] = Minutes;
+
+	//// Make GameDate array Hours slot
+	//GameDate[2] = Hours;
+
 	// Make GameDate array Seconds slot
-	GameDate[0] = Seconds;
+	GameHour[0] = Seconds;
 
 	// Make GameDate array Minutes slot
-	GameDate[1] = Minutes;
+	GameHour[1] = Minutes;
 
 	// Make GameDate array Hours slot
-	GameDate[2] = Hours;
+	GameHour[2] = Hours;
 
 	// Debug session
 	//FString MessageString; // = FString("Move Right. Because of Mouse X value is ");
 
-	//MessageString.AppendInt(GameDate[2]);
+	//MessageString.AppendInt(GameHour[2]);
 	//MessageString.Append(TEXT(":"));
-	//MessageString.AppendInt(GameDate[1]);
+	//MessageString.AppendInt(GameHour[1]);
 	//MessageString.Append(TEXT(":"));
-	//MessageString.AppendInt(GameDate[0]);
+	//MessageString.AppendInt(GameHour[0]);
 	//GEngine->AddOnScreenDebugMessage(-1, 30, FColor::White, MessageString);
+
+	/*MessageString.AppendInt(GameDate[2]);
+	MessageString.Append(TEXT(":"));
+	MessageString.AppendInt(GameDate[1]);
+	MessageString.Append(TEXT(":"));
+	MessageString.AppendInt(GameDate[0]);
+	GEngine->AddOnScreenDebugMessage(-1, 30, FColor::White, MessageString);*/
 }
 
 void ARTS_GameState::SetCalendar_Implementation()

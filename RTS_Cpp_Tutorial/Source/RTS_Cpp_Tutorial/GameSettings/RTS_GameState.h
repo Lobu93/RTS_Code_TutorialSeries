@@ -51,6 +51,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Calendar")
 	TArray<int32> GameDate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Calendar")
+	TArray<int32> GameHour;
+
 	int32 Day = 17;
 	UPROPERTY(EditAnywhere, Category = "Calendar", meta = (ClampMin = "1.0", ClampMax = "12.0", UIMin = "1.0", UIMax = "12.0"))
 	int32 Month = 3;

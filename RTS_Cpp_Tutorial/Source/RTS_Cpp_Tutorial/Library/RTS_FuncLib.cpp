@@ -10,10 +10,17 @@ float URTS_FuncLib::SetGameTime(float DeltaTime, float GameSpeed, float InitialG
 	float DivisorLocal = 24.0f;
 	float RemainderLocal;
 
-	DividendLocal = (DeltaTime / GameSpeed) + InitialGameTime;
+	if (GameSpeed > 0.0f)
+	{
+		DividendLocal = (DeltaTime / GameSpeed) + InitialGameTime;
 
-	// Division (Whole and Reminder)
-	DayCount = UKismetMathLibrary::FMod(DividendLocal, DivisorLocal, RemainderLocal);
+		// Division (Whole and Reminder)
+		DayCount = UKismetMathLibrary::FMod(DividendLocal, DivisorLocal, RemainderLocal);
 
-	return RemainderLocal;
+		return RemainderLocal;
+	}
+	else
+	{
+		return InitialGameTime;
+	}
 }
