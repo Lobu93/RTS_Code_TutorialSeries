@@ -45,21 +45,6 @@ void ASunRotation::Tick(float DeltaTime)
 	float GameTimeLocal;
 	int32 DayCounterLocal;
 
-	//if (GameSpeed > 0.0f)
-	//{
-	//	GameTimeLocal = URTS_FuncLib::SetGameTime(DeltaTime, GameSpeed, GameTime, DayCounterLocal);
-
-	//	Y_PitchLocal = GameTimeLocal / 1.5f;
-
-	//	Y_PitchLocal /= 6.0f;
-
-	//	// UE_LOG(LogTemp, Warning, TEXT("void ASunRotation::Tick() | Y_PitchLocal pre *= 90: %f"), Y_PitchLocal);
-
-	//	Y_PitchLocal *= 90.0f;
-
-	//	SunRef->AddActorLocalRotation(FRotator(Y_PitchLocal, 0.0f, 0.0f));
-	//}
-
 	GameTimeLocal = URTS_FuncLib::SetGameTime(DeltaTime, GameSpeed, GameTime, DayCounterLocal);
 
 	Y_PitchLocal = GameTimeLocal / 1.5f;

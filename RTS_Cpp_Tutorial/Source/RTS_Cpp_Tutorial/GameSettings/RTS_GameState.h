@@ -42,8 +42,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
 	ARTS_PlayerController* ControllerRef;
 
-	// bool bIsImplemented;
-
 	// For debug change: 150.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameSpeedSettings")
 	float GameSpeed = 1.0f; 

@@ -32,27 +32,12 @@ void ARTS_GameState::BeginPlay()
 
 	GameSpeed = DefaultGameSpeed;
 
-	//bIsImplemented = this->GetClass()->ImplementsInterface(URTS_GameTime_IF::StaticClass());
-
-	/*if (bIsImplemented)
-	{
-		IRTS_GameTime_IF::Execute_FunctionUpdateGameSpeed(this, GameTime);
-	}*/
 }
 
 // Called every frame
 void ARTS_GameState::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	/*if (GameSpeed > 0.0f)
-	{
-		GameTime = URTS_FuncLib::SetGameTime(DeltaTime, GameSpeed, GameTime, DayCounter);
-
-		SetClock();
-
-		SetCalendar();
-	}*/
 
 	GameTime = URTS_FuncLib::SetGameTime(DeltaTime, GameSpeed, GameTime, DayCounter);
 

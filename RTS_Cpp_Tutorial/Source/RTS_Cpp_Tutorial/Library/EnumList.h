@@ -29,3 +29,15 @@ enum class EGameSpeedSettings : uint8
 	Speed_4,
 	Speed_5
 };
+
+UENUM(BlueprintType)
+enum class EResourceLevel : uint8
+{
+	Resource_0,
+	Resource_1,
+	Resource_2,
+	Resource_3,
+	Resource_4,
+	Resource_5,
+	Resource_6
+};
