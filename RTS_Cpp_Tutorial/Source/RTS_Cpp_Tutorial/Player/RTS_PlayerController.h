@@ -90,4 +90,14 @@ public:
 	bool bDisableCamMovement;
 
 	FVector2D MouseLastValidPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Resources")
+	int32 WoodResource = 1550;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Resources")
+	int32 OreResource = 1200;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Resources")
+	int32 MaxResourceLimit;
+
 };
