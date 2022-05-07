@@ -41,3 +41,13 @@ enum class EResourceLevel : uint8
 	Resource_5,
 	Resource_6
 };
+
+UENUM(BlueprintType)
+enum class ERespawnTimer : uint8
+{
+	_Blank,
+	Pause,
+	GameSpeed,
+	Custom,
+	GameSpeed_x_Custom
+};

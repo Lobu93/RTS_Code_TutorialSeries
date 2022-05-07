@@ -31,7 +31,7 @@ private:
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
 	//float GameSpeed = 0.25f; // For debug change: 150.0f;
 	float GameTime;
-	float DefaultGameSpeed = 1.0f; // For debug change: 150.0f;
+	float DefaultGameSpeed = 150.0f; // For debug change: 150.0f;
 	float SpeedMultiplier = 1.0f;
 	int32 DayCounter;
 
@@ -42,9 +42,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
 	ARTS_PlayerController* ControllerRef;
 
-	// For debug change: 150.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameSpeedSettings")
-	float GameSpeed = 1.0f; 
+	float GameSpeed = 150.0f; 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Calendar")
 	TArray<int32> GameDate;

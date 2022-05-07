@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-//#include "RTS_ResourceMaster.h"
+#include "../Library/EnumList.h"
 #include "RTS_SpawnVolume.generated.h"
 
 class UBoxComponent;
 class ARTS_ResourceMaster;
+class ARTS_PlayerController;
+class ARTS_GameState;
 
 UCLASS()
 class RTS_CPP_TUTORIAL_API ARTS_SpawnVolume : public AActor
@@ -23,6 +25,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void ReferenceCasts();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -35,6 +39,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
 	TSubclassOf<ARTS_ResourceMaster> ResourceRef;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
+	ARTS_PlayerController* PlayerControllerRef;
+
+	ARTS_GameState* GameStateRef;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
+	ERespawnTimer TimeSetting;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
 	bool bIsSpawnedOnBeginPlay = true;
 
@@ -44,16 +56,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ResourceSettings")
 	int32 NumOfResourcesSpawn = -1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ResourceSettings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ResourceSettings")
 	int32 TotalNumberSpawned;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ResourceSettings")
 	int32 MaxResourcesSpawned;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ResourceSettings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ResourceSettings")
 	float RespawnTime;
+
+	float GameSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ResourceSettings")
+	float UserRespawnTime;
 
 	void SpawnResource(TSubclassOf<ARTS_ResourceMaster> Resource, int32 SpawnAmount);
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ResourceSettings")
 	void SpawnResourcesOnTime();
+	virtual void SpawnResourcesOnTime_Implementation();
+
+	float SetRespawnTimer();
+
+	UFUNCTION(BlueprintCallable)
+	void GetGameSpeed(float InGameSpeed);
 };

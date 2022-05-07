@@ -7,6 +7,9 @@
 #include "Landscape.h"
 #include "UObject/UObjectBaseUtility.h"
 #include "Components/BoxComponent.h"
+#include "../Player/RTS_PlayerController.h"
+#include "../GameSettings/RTS_GameState.h"
+#include "../Library/RTS_FuncLib.h"
 #include "RTS_ResourceMaster.h"
 
 // Sets default values
@@ -31,6 +34,17 @@ void ARTS_SpawnVolume::BeginPlay()
 	Super::BeginPlay();
 
 	FTimerHandle TimerHandleLocal;
+
+	ReferenceCasts();
+
+	if (GameStateRef)
+	{
+		GameStateRef->GameSpeedControl_Delegate.AddDynamic(this, &ARTS_SpawnVolume::GetGameSpeed);
+
+		GameSpeed = GameStateRef->GetGameSpeed();
+
+		SetRespawnTimer();
+	}
 	
 	if (bIsSpawnedOnBeginPlay)
 	{
@@ -45,11 +59,27 @@ void ARTS_SpawnVolume::BeginPlay()
 	}
 }
 
+void ARTS_SpawnVolume::ReferenceCasts()
+{
+	PlayerControllerRef = (ARTS_PlayerController*)GetWorld()->GetFirstPlayerController();
+	if (!PlayerControllerRef)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ARTS_SpawnVolume::ReferenceCasts() Bad PlayerController Class"));
+	}
+
+	GameStateRef = (ARTS_GameState*)GetWorld()->GetGameState();
+	if (!GameStateRef)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ARTS_SpawnVolume::BeginPlay() Bad GameState Class"));
+	}
+}
+
 // Called every frame
 void ARTS_SpawnVolume::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	SetRespawnTimer();
 }
 
 void ARTS_SpawnVolume::SpawnResource(TSubclassOf<ARTS_ResourceMaster> Resource, int32 SpawnAmount)
@@ -127,7 +157,7 @@ void ARTS_SpawnVolume::SpawnResource(TSubclassOf<ARTS_ResourceMaster> Resource, 
 	}
 }
 
-void ARTS_SpawnVolume::SpawnResourcesOnTime()
+void ARTS_SpawnVolume::SpawnResourcesOnTime_Implementation()
 {
 	if ((bIsSpawnedOnTimer) && (TotalNumberSpawned < MaxResourcesSpawned))
 	{
@@ -137,5 +167,35 @@ void ARTS_SpawnVolume::SpawnResourcesOnTime()
 
 		// UE_LOG(LogTemp, Warning, TEXT("ARTS_SpawnVolume::SpawnResourcesOnTime() | TotalNumberSpawned: %d"), TotalNumberSpawned);
 	}
+}
+
+float ARTS_SpawnVolume::SetRespawnTimer()
+{
+	switch (TimeSetting)
+	{
+	case ERespawnTimer::_Blank:
+		break;
+	case ERespawnTimer::Pause:
+		RespawnTime = 0.0f;
+		break;
+	case ERespawnTimer::GameSpeed:
+		RespawnTime = GameSpeed;
+		break;
+	case ERespawnTimer::Custom:
+		RespawnTime = UserRespawnTime;
+		break;
+	case ERespawnTimer::GameSpeed_x_Custom:
+		RespawnTime = UserRespawnTime * GameSpeed;
+		break;
+	default:
+		break;
+	}
+
+	return RespawnTime;
+}
+
+void ARTS_SpawnVolume::GetGameSpeed(float InGameSpeed)
+{
+	GameSpeed = InGameSpeed;
 }
 

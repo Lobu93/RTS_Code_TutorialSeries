@@ -68,7 +68,7 @@ void ARTS_GameState::ReferenceCasts()
 	ControllerRef = (ARTS_PlayerController*)GetWorld()->GetFirstPlayerController();
 	if (!ControllerRef)
 	{
-		UE_LOG(LogTemp, Error, TEXT("ARTS_GameState::ReferenceCasts() Bad CameraPawn Class"));
+		UE_LOG(LogTemp, Error, TEXT("ARTS_GameState::ReferenceCasts() Bad PlayerController Class"));
 	}
 }
 
