@@ -55,7 +55,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Calendar", meta = (ClampMin = "1.0", ClampMax = "12.0", UIMin = "1.0", UIMax = "12.0"))
 	int32 Month = 3;
 	int32 Year = 2021;
-	int32 Hours = 11; // int variable that holds hours game time
+	int32 Hours = 1; // int variable that holds hours game time
 	int32 Minutes; // int variable that holds minutes game time
 	int32 Seconds; // int variable that holds seconds game time
 

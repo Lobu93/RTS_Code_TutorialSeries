@@ -52,10 +52,14 @@ void ARTS_SpawnVolume::BeginPlay()
 
 		TotalNumberSpawned += NumOfResourcesSpawn;
 
-		if ((bIsSpawnedOnTimer) && (TotalNumberSpawned < MaxResourcesSpawned))
+		if (bIsSpawnedOnTimer)
 		{
 			GetWorldTimerManager().SetTimer(TimerHandleLocal, this, &ARTS_SpawnVolume::SpawnResourcesOnTime, RespawnTime, true);
 		}
+	}
+	else
+	{
+		GetWorldTimerManager().SetTimer(TimerHandleLocal, this, &ARTS_SpawnVolume::SpawnResourcesOnTime, RespawnTime, true);
 	}
 }
 

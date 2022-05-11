@@ -24,6 +24,8 @@ ARTS_CameraPawn::ARTS_CameraPawn()
 	SpringArm->SetRelativeRotation(FQuat(FRotator(-70.0f, 0.0f, 0.0f)));
 	SpringArm->TargetArmLength = 1500.0f;
 	SpringArm->bDoCollisionTest = false;
+	SpringArm->bEnableCameraLag = true;
+	SpringArm->bEnableCameraRotationLag = true;
 	SpringArm->SetupAttachment(Sphere);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));

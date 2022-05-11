@@ -71,7 +71,7 @@ void ARTS_PlayerController::Move_CameraPawn_X(float AxisValue)
 
 	ActorTransformLocal = FTransform(ActorTransformLocal.GetRotation(), LocationLocal, ActorTransformLocal.GetScale3D());
 
-	ActorNewLocation = FVector(ActorTransformLocal.GetLocation().X, ActorTransformLocal.GetLocation().Y, 200.0f);
+	ActorNewLocation = FVector(ActorTransformLocal.GetLocation().X, ActorTransformLocal.GetLocation().Y, 110.0f);
 
 	if (!bDisableCamMovement)
 	{
