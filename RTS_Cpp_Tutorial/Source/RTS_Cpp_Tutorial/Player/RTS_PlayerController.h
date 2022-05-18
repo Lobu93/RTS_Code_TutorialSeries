@@ -8,6 +8,7 @@
 
 class ARTS_CameraPawn;
 class ARTS_GameState;
+class ARTS_Cpp_TutorialCharacter;
 
 /**
  * 
@@ -73,6 +74,9 @@ public:
 
 	ARTS_GameState* GameStateRef;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
+	TSubclassOf<ARTS_Cpp_TutorialCharacter> UnitForDebug;
+
 	// How fast the camera moves when zooming
 	float ZoomSpeed = 150.0f;
 
@@ -99,5 +103,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Resources")
 	int32 MaxResourceLimit;
+
+	void SpawnUnitDebug();
 
 };

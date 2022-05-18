@@ -18,4 +18,7 @@ public:
 	// This is a function to help run and pass game time using hours
 	UFUNCTION(BlueprintCallable, Category = "Library")
 	static float SetGameTime(float DeltaTime, float GameSpeed, float InitialGameTime, int32& DayCount);
+
+	UFUNCTION(BlueprintCallable, Category = "Library")
+	static FVector SetCursorWorldPosition(APlayerController* Controller, float SightDistance);
 };

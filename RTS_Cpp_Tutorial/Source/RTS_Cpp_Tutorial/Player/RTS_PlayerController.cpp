@@ -4,11 +4,14 @@
 #include "RTS_PlayerController.h"
 #include "RTS_CameraPawn.h"
 #include "../GameSettings/RTS_GameState.h"
+#include "../Library/RTS_FuncLib.h"
+#include "../RTS_Cpp_TutorialCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
+#include "GameFramework/PlayerInput.h"
 
 
 // Called when the game starts or when spawned
@@ -49,6 +52,9 @@ void ARTS_PlayerController::SetupInputComponent()
 	InputComponent->BindAction("SpeedModifier", IE_Pressed, this, &ARTS_PlayerController::SpeedModifierPressed);
 	InputComponent->BindAction("SpeedModifier", IE_Released, this, &ARTS_PlayerController::SpeedModifierReleased);
 
+	FInputActionKeyMapping SpawnMapping("SpawnName", EKeys::V, 0, 0, 0, 0);
+	this->PlayerInput->AddActionMapping(SpawnMapping);
+	InputComponent->BindAction("SpawnName", IE_Pressed, this, &ARTS_PlayerController::SpawnUnitDebug);
 }
 
 void ARTS_PlayerController::Move_CameraPawn_X(float AxisValue)
@@ -297,4 +303,17 @@ void ARTS_PlayerController::ReferenceCasts()
 	{
 		UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::BeginPlay() Bad GameState Class"));
 	}
+}
+
+void ARTS_PlayerController::SpawnUnitDebug()
+{
+	FHitResult HitResult;
+	FActorSpawnParameters SpawnInfo;
+	FVector UnitLocationLocal;
+	FRotator UnitRotationLocal = FRotator(0, 0, 0);
+
+	UnitLocationLocal = URTS_FuncLib::SetCursorWorldPosition(this, 10000.0f);
+	UnitLocationLocal.Z = 150.0f;
+
+	GetWorld()->SpawnActor<ARTS_Cpp_TutorialCharacter>(UnitForDebug, UnitLocationLocal, UnitRotationLocal, SpawnInfo);
 }
