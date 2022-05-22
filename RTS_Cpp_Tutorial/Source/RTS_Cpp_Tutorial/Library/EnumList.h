@@ -51,3 +51,42 @@ enum class ERespawnTimer : uint8
 	Custom,
 	GameSpeed_x_Custom
 };
+
+UENUM(BlueprintType)
+enum class EFemaleNames : uint8
+{
+	Charllote,
+	Kathleen,
+	Kelly,
+	Alexis,
+	Jenny,
+	Mary,
+	Lisa,
+	Sue
+};
+
+UENUM(BlueprintType)
+enum class EMaleNames : uint8
+{
+	Zach,
+	Sam,
+	James,
+	Ben,
+	Jon,
+	Steve,
+	George,
+	Charlie
+};
+
+UENUM(BlueprintType)
+enum class ESurnames : uint8
+{
+	Parker,
+	Smith,
+	Washington,
+	Blackwell,
+	Roffus,
+	Alanson,
+	Davis,
+	Wilson
+};
