@@ -9,6 +9,9 @@
 #include "SlateCore.h"
 #include "RTS_Cpp_TutorialCharacter.generated.h"
 
+class ARTS_PlayerController;
+class ARTS_GameState;
+
 UCLASS(Blueprintable)
 class ARTS_Cpp_TutorialCharacter : public ACharacter
 {
@@ -42,6 +45,12 @@ public:
 	ESurnames Surname;
 	bool bIsSpawnedIn = true;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
+	ARTS_GameState* GameStateRef;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
+	ARTS_PlayerController* ControllerRef;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit|Master")
 	FRTS_UnitProfileStruct UnitProfile;
 
@@ -54,15 +63,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Unit|Configs")
 	FLinearColor NewColor;
 
-	/*UPROPERTY(EditDefaultsOnly, Category = "Unit|MeshDebug")
-	UMaterialInterface* MaterialInterface;
-
-	UPROPERTY(EditAnywhere, Category = "Unit|MeshDebug")
-	FLinearColor NewColor;
-
-	UPROPERTY()
-	UMaterialInstanceDynamic* MeshMaterialInstanceLocal;*/
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit|Details")
 	int32 UnitSex;
 
@@ -72,8 +72,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit|Stats")
 	int32 UnitAge;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit|Details")
+	int32 BirthYear;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit|Details")
+	int32 Birthday;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit|Details")
+	int32 BirthMonth;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit|Legend")
 	FSlateBrush UnitImage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Unit|Legend")
+	FSlateBrush MaleImage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Unit|Legend")
+	FSlateBrush FemaleImage;
+
+	void ReferenceCast();
 
 	EFemaleNames SetFemaleName();
 
@@ -84,5 +101,9 @@ public:
 	FString GetRandomName(int32 Sex);
 
 	void SetUnitFeatures();
+
+	void SetUnitBirthday();
+
+	void BirthdayCheck();
 };
 

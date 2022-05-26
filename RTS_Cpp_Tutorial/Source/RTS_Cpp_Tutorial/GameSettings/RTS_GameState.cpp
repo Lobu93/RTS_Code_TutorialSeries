@@ -6,7 +6,7 @@
 #include "../Library/RTS_FuncLib.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "../Library/RTS_GameTime_IF.h"
-
+#include "../RTS_Cpp_TutorialCharacter.h"
 
 ARTS_GameState::ARTS_GameState()
 {
@@ -44,6 +44,11 @@ void ARTS_GameState::Tick(float DeltaTime)
 	SetClock();
 
 	SetCalendar();
+
+	if (DayCounter == 1)
+	{
+		ControllerRef->SpawnedUnit->BirthdayCheck();
+	}
 }
 
 bool ARTS_GameState::FunctionUpdateGameSpeed_Implementation(float InSpeedMultiplier)

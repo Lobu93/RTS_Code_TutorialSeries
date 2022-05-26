@@ -12,8 +12,9 @@
 #include "Materials/Material.h"
 #include "Engine/World.h"
 #include "Library/EnumList.h"
-// #include "Components/SkeletalMeshComponent.h"
-// #include "Materials/MaterialInstanceDynamic.h"
+#include "Player/RTS_PlayerController.h"
+#include "GameSettings/RTS_GameState.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ARTS_Cpp_TutorialCharacter::ARTS_Cpp_TutorialCharacter()
 {
@@ -60,10 +61,14 @@ ARTS_Cpp_TutorialCharacter::ARTS_Cpp_TutorialCharacter()
 // Called when the game starts or when spawned
 void ARTS_Cpp_TutorialCharacter::BeginPlay()
 {
+	ReferenceCast();
+
 	if (!bIsSpawnedIn)
 	{
 		SetUnitFeatures();
 	}
+
+	SetUnitBirthday();
 }
 
 void ARTS_Cpp_TutorialCharacter::OnConstruction(const FTransform& Transform)
@@ -74,20 +79,24 @@ void ARTS_Cpp_TutorialCharacter::OnConstruction(const FTransform& Transform)
 	if (UnitSex == 0)
 	{
 		NewColor = FLinearColor::Blue;
+
+		UE_LOG(LogTemp, Warning, TEXT("ARTS_Cpp_TutorialCharacter::OnConstruction() | Boy wears Blue: %s"), *NewColor.ToString());
 	}
 	else
 	{
 		NewColor = FLinearColor(FColor::Purple);
+
+		UE_LOG(LogTemp, Warning, TEXT("ARTS_Cpp_TutorialCharacter::OnConstruction() | Girl wears Pink: %s"), *NewColor.ToString());
 	}
 
-	if (DynMaterial)
+	/*if (DynMaterial)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ARTS_Cpp_TutorialCharacter::OnConstruction() | NewColor: %s"), *NewColor.ToString());
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("ARTS_Cpp_TutorialCharacter::OnConstruction() | MaterialInstanceDynamic error..."));
-	}
+	}*/
 
 	DynMaterial->SetVectorParameterValue("BodyColor", NewColor);
 }
@@ -122,6 +131,21 @@ void ARTS_Cpp_TutorialCharacter::Tick(float DeltaSeconds)
 			SelectedDecal->SetWorldRotation(CursorR);
 		}
 	}*/
+}
+
+void ARTS_Cpp_TutorialCharacter::ReferenceCast()
+{
+	GameStateRef = (ARTS_GameState*)GetWorld()->GetGameState();
+	if (!GameStateRef)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ARTS_Cpp_TutorialCharacter::ReferenceCast() Bad GameState Class"));
+	}
+
+	ControllerRef = (ARTS_PlayerController*)GetWorld()->GetFirstPlayerController();
+	if (!ControllerRef)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ARTS_Cpp_TutorialCharacter::ReferenceCast() Bad PlayerController Class"));
+	}
 }
 
 EFemaleNames ARTS_Cpp_TutorialCharacter::SetFemaleName()
@@ -208,38 +232,50 @@ void ARTS_Cpp_TutorialCharacter::SetUnitFeatures()
 	{		
 		UnitName = GetRandomName(UnitSex);
 		UnitAge = FMath::RandRange(18, 70);
-		// TODO Set UnitImage
+		UnitImage = MaleImage;
 		UnitProfile.Name = UnitName;
 		UnitProfile.Sex = UnitSex;
 		UnitProfile.Age = UnitAge;
-		// TODO Set UnitProfile.Image
+		UnitProfile.UnitImage = UnitImage;
 
 		UE_LOG(LogTemp, Warning, TEXT("ARTS_Cpp_TutorialCharacter::SetUnitFeatures() | Name: %s Sex: %d Age: %d"), 
 			*UnitProfile.Name, UnitProfile.Sex, UnitProfile.Age);
 	}
 	else
 	{
-		// MeshMaterialInstanceLocal->SetVectorParameterValue(TEXT("BodyColor"), FLinearColor(FColor::Purple));
-
-		if (DynMaterial)
-		{
-			NewColor = FLinearColor(FColor::Orange);
-			DynMaterial->SetVectorParameterValue(FName("BodyColor"), NewColor);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("ARTS_Cpp_TutorialCharacter::SetUnitFeatures() | Pink Color error..."));
-		}
-
 		UnitName = GetRandomName(UnitSex);
 		UnitAge = FMath::RandRange(18, 70);
-		// TODO Set UnitImage
+		UnitImage = FemaleImage;
 		UnitProfile.Name = UnitName;
 		UnitProfile.Sex = UnitSex;
 		UnitProfile.Age = UnitAge;
-		// TODO Set UnitProfile.Image
+		UnitProfile.UnitImage = UnitImage;
 
 		UE_LOG(LogTemp, Warning, TEXT("ARTS_Cpp_TutorialCharacter::SetUnitFeatures() | Name: %s Sex: %d Age: %d"),
 			*UnitProfile.Name, UnitProfile.Sex, UnitProfile.Age);
+	}
+}
+
+void ARTS_Cpp_TutorialCharacter::SetUnitBirthday()
+{
+	if (!bIsSpawnedIn)
+	{
+		BirthYear = GameStateRef->Year - UnitAge;
+		Birthday = GameStateRef->Day;
+		BirthMonth = GameStateRef->Month;
+	}
+	else
+	{
+		BirthYear = GameStateRef->Year - UnitAge;
+		BirthMonth = FMath::RandRange(1, 12);
+		Birthday = FMath::Clamp(FMath::RandRange(1, 31), 0, UKismetMathLibrary::DaysInMonth(BirthYear, BirthMonth));
+	}
+}
+
+void ARTS_Cpp_TutorialCharacter::BirthdayCheck()
+{
+	if ((GameStateRef->Month == BirthMonth) && (GameStateRef->Day == Birthday))
+	{
+		UnitAge++;
 	}
 }

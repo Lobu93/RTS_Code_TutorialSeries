@@ -294,14 +294,14 @@ void ARTS_PlayerController::ReferenceCasts()
 	CameraPawnRef = (ARTS_CameraPawn*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if (!CameraPawnRef)
 	{
-		UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::BeginPlay() Bad CameraPawn Class"));
+		UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::ReferenceCasts() Bad CameraPawn Class"));
 	}
 
 	// GameStateRef = (ARTS_GameState*)UGameplayStatics::GetGameState(GetWorld());
 	GameStateRef = (ARTS_GameState*)GetWorld()->GetGameState();
 	if (!GameStateRef)
 	{
-		UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::BeginPlay() Bad GameState Class"));
+		UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::ReferenceCasts() Bad GameState Class"));
 	}
 }
 
@@ -315,5 +315,5 @@ void ARTS_PlayerController::SpawnUnitDebug()
 	UnitLocationLocal = URTS_FuncLib::SetCursorWorldPosition(this, 10000.0f);
 	UnitLocationLocal.Z = 150.0f;
 
-	GetWorld()->SpawnActor<ARTS_Cpp_TutorialCharacter>(UnitForDebug, UnitLocationLocal, UnitRotationLocal, SpawnInfo);
+	SpawnedUnit = GetWorld()->SpawnActor<ARTS_Cpp_TutorialCharacter>(UnitForDebug, UnitLocationLocal, UnitRotationLocal, SpawnInfo);
 }
