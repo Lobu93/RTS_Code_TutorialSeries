@@ -74,8 +74,6 @@ public:
 
 	ARTS_GameState* GameStateRef;
 
-	ARTS_Cpp_TutorialCharacter* SpawnedUnit;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
 	TSubclassOf<ARTS_Cpp_TutorialCharacter> UnitForDebug;
 

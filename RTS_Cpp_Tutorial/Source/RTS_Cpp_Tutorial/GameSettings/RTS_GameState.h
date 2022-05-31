@@ -10,6 +10,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameSpeedControl, float, InGameTime);
 
 class ARTS_PlayerController;
+class ARTS_Cpp_TutorialCharacter;
 
 /**
  * 
@@ -59,6 +60,8 @@ public:
 	int32 Minutes; // int variable that holds minutes game time
 	int32 Seconds; // int variable that holds seconds game time
 
+	TArray<ARTS_Cpp_TutorialCharacter*> ListOfAllUnits;
+
 	//Event Dispatcher
 	UPROPERTY(BlueprintAssignable, Category = "Event Dispatcher")
 	FGameSpeedControl GameSpeedControl_Delegate;
@@ -78,4 +81,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetGameSpeed();
+
+	TArray<ARTS_Cpp_TutorialCharacter*> GetAllUnits();
 };

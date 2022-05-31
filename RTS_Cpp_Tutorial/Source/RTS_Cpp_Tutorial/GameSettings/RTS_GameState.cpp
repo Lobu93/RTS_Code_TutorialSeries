@@ -5,6 +5,7 @@
 #include "../Player/RTS_PlayerController.h"
 #include "../Library/RTS_FuncLib.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "../Library/RTS_GameTime_IF.h"
 #include "../RTS_Cpp_TutorialCharacter.h"
 
@@ -47,7 +48,14 @@ void ARTS_GameState::Tick(float DeltaTime)
 
 	if (DayCounter == 1)
 	{
-		ControllerRef->SpawnedUnit->BirthdayCheck();
+		TArray<ARTS_Cpp_TutorialCharacter*> UnitListLocal;
+
+		UnitListLocal = GetAllUnits();
+
+		for (auto UnitLocal : UnitListLocal)
+		{
+			UnitLocal->BirthdayCheck();
+		}
 	}
 }
 
@@ -187,4 +195,31 @@ void ARTS_GameState::SetCalendar_Implementation()
 float ARTS_GameState::GetGameSpeed()
 {
 	return GameSpeed;
+}
+
+TArray<ARTS_Cpp_TutorialCharacter*> ARTS_GameState::GetAllUnits()
+{
+	TArray<AActor*> UnitOutLocal;
+	// TArray<ARTS_Cpp_TutorialCharacter*> UnitOutLocal;
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARTS_Cpp_TutorialCharacter::StaticClass(), UnitOutLocal);
+
+	if (UnitOutLocal.Num() > 0)
+	{
+		for (int Index = 0; Index < UnitOutLocal.Num(); Index++)
+		{
+			if ((Index + 1) == UnitOutLocal.Num())
+			{
+				ListOfAllUnits.Add(Cast<ARTS_Cpp_TutorialCharacter>(UnitOutLocal[Index]));
+			}
+		}
+
+		for (auto Unit : ListOfAllUnits)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ARTS_GameState::GetAllUnits() | UnitName: %s"),
+				*Unit->UnitProfile.Name);
+		}
+	}
+
+	return ListOfAllUnits;
 }
