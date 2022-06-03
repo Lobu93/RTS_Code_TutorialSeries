@@ -52,53 +52,30 @@ ARTS_Cpp_TutorialCharacter::ARTS_Cpp_TutorialCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
-	if (bIsSpawnedIn)
+	/*if (bIsSpawnedIn)
 	{
 		SetUnitFeatures();
-	}
+	}*/
 }
 
 // Called when the game starts or when spawned
 void ARTS_Cpp_TutorialCharacter::BeginPlay()
 {
-	ReferenceCast();
-
-	if (!bIsSpawnedIn)
+	if (bIsSpawnedIn)
 	{
 		SetUnitFeatures();
 	}
 
-	SetUnitBirthday();
-}
+	ReferenceCast();
 
-void ARTS_Cpp_TutorialCharacter::OnConstruction(const FTransform& Transform)
-{
-	DynMaterial = UMaterialInstanceDynamic::Create(MaterialToEdit, this);
-	GetMesh()->SetMaterial(0, DynMaterial);
-	
-	if (UnitSex == 0)
-	{
-		NewColor = FLinearColor::Blue;
+	ControllerRef->DisplayUnitHUD_Delegate.AddDynamic(this, &ARTS_Cpp_TutorialCharacter::DisplayUnitHUD);
 
-		UE_LOG(LogTemp, Warning, TEXT("ARTS_Cpp_TutorialCharacter::OnConstruction() | Boy wears Blue: %s"), *NewColor.ToString());
-	}
-	else
+	/*if (!bIsSpawnedIn)
 	{
-		NewColor = FLinearColor(FColor::Purple);
-
-		UE_LOG(LogTemp, Warning, TEXT("ARTS_Cpp_TutorialCharacter::OnConstruction() | Girl wears Pink: %s"), *NewColor.ToString());
-	}
-
-	/*if (DynMaterial)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ARTS_Cpp_TutorialCharacter::OnConstruction() | NewColor: %s"), *NewColor.ToString());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("ARTS_Cpp_TutorialCharacter::OnConstruction() | MaterialInstanceDynamic error..."));
+		SetUnitFeatures();
 	}*/
 
-	DynMaterial->SetVectorParameterValue("BodyColor", NewColor);
+	SetUnitBirthday();
 }
 
 void ARTS_Cpp_TutorialCharacter::Tick(float DeltaSeconds)
@@ -133,7 +110,7 @@ void ARTS_Cpp_TutorialCharacter::Tick(float DeltaSeconds)
 	}*/
 }
 
-void ARTS_Cpp_TutorialCharacter::ReferenceCast()
+void ARTS_Cpp_TutorialCharacter::ReferenceCast_Implementation()
 {
 	GameStateRef = (ARTS_GameState*)GetWorld()->GetGameState();
 	if (!GameStateRef)
@@ -228,8 +205,12 @@ void ARTS_Cpp_TutorialCharacter::SetUnitFeatures()
 	// 0 = Male
 	UnitSex = FMath::RandRange(0, 1);
 
+	DynMaterial = UMaterialInstanceDynamic::Create(MaterialToEdit, this);
+	GetMesh()->SetMaterial(0, DynMaterial);
+
 	if (UnitSex == 0)
-	{		
+	{	
+		NewColor = FLinearColor::Blue;
 		UnitName = GetRandomName(UnitSex);
 		UnitAge = FMath::RandRange(18, 70);
 		UnitImage = MaleImage;
@@ -243,6 +224,7 @@ void ARTS_Cpp_TutorialCharacter::SetUnitFeatures()
 	}
 	else
 	{
+		NewColor = FLinearColor(FColor::Purple);
 		UnitName = GetRandomName(UnitSex);
 		UnitAge = FMath::RandRange(18, 70);
 		UnitImage = FemaleImage;
@@ -253,6 +235,15 @@ void ARTS_Cpp_TutorialCharacter::SetUnitFeatures()
 
 		UE_LOG(LogTemp, Warning, TEXT("ARTS_Cpp_TutorialCharacter::SetUnitFeatures() | Name: %s Sex: %d Age: %d"),
 			*UnitProfile.Name, UnitProfile.Sex, UnitProfile.Age);
+	}
+
+	if (DynMaterial)
+	{
+		DynMaterial->SetVectorParameterValue("BodyColor", NewColor);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ARTS_Cpp_TutorialCharacter::SetUnitFeatures() | Error: DynMaterial is null..."));
 	}
 }
 
@@ -277,5 +268,17 @@ void ARTS_Cpp_TutorialCharacter::BirthdayCheck()
 	if ((GameStateRef->Month == BirthMonth) && (GameStateRef->Day == Birthday))
 	{
 		UnitAge++;
+	}
+}
+
+void ARTS_Cpp_TutorialCharacter::DisplayUnitHUD_Implementation(AActor* Actor, bool bBypass)
+{
+	if ((Actor == this) && ((bBypass == true) || (!bIsHidden)))
+	{
+		bCanDisplayUnitHUD = true;
+	}
+	else
+	{
+		bCanDisplayUnitHUD = false;
 	}
 }

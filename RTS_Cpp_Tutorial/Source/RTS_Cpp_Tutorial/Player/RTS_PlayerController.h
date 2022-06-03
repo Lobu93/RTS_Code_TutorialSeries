@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "RTS_PlayerController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDisplayUnitHUD, class AActor*, HitActor, bool, bBypass);
+
 class ARTS_CameraPawn;
 class ARTS_GameState;
 class ARTS_Cpp_TutorialCharacter;
@@ -53,6 +55,8 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	FVector EdgeScroll();
 
+	void SecondaryAction();
+
 	// Cast references once for the entire code, reduce system drain.
 	void ReferenceCasts();
 
@@ -73,6 +77,12 @@ public:
 	ARTS_CameraPawn* CameraPawnRef;
 
 	ARTS_GameState* GameStateRef;
+
+	// DisplayUnit HUD Event Dispatcher
+	UPROPERTY(BlueprintAssignable, Category = "Event Dispatcher")
+	FDisplayUnitHUD DisplayUnitHUD_Delegate;
+
+	const TArray<TEnumAsByte<EObjectTypeQuery>> SelectableObjectsEnum;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
 	TSubclassOf<ARTS_Cpp_TutorialCharacter> UnitForDebug;
@@ -103,6 +113,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Resources")
 	int32 MaxResourceLimit;
+
+	bool bIsUnitSelected;
 
 	void SpawnUnitDebug();
 

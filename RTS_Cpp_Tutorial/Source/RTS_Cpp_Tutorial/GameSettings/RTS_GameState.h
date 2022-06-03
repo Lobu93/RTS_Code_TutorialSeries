@@ -62,14 +62,13 @@ public:
 
 	TArray<ARTS_Cpp_TutorialCharacter*> ListOfAllUnits;
 
-	//Event Dispatcher
+	// GameSpeed Event Dispatcher
 	UPROPERTY(BlueprintAssignable, Category = "Event Dispatcher")
 	FGameSpeedControl GameSpeedControl_Delegate;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Game Speed Settings")
 	bool FunctionUpdateGameSpeed(float InSpeedMultiplier);
 	virtual bool FunctionUpdateGameSpeed_Implementation(float InSpeedMultiplier) override;
-
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Calendar")
 	void SetClock();

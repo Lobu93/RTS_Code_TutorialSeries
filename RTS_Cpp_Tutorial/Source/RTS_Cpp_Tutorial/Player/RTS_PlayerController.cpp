@@ -52,6 +52,8 @@ void ARTS_PlayerController::SetupInputComponent()
 	InputComponent->BindAction("SpeedModifier", IE_Pressed, this, &ARTS_PlayerController::SpeedModifierPressed);
 	InputComponent->BindAction("SpeedModifier", IE_Released, this, &ARTS_PlayerController::SpeedModifierReleased);
 
+	InputComponent->BindAction("SecondaryAction", IE_Pressed, this, &ARTS_PlayerController::SecondaryAction);
+
 	FInputActionKeyMapping SpawnMapping("SpawnName", EKeys::V, 0, 0, 0, 0);
 	this->PlayerInput->AddActionMapping(SpawnMapping);
 	InputComponent->BindAction("SpawnName", IE_Pressed, this, &ARTS_PlayerController::SpawnUnitDebug);
@@ -287,6 +289,38 @@ FVector ARTS_PlayerController::EdgeScroll()
 	DeltaSpeed_Y = EdgeScrollSpeedX * MovementSpeedModifier;
 
 	return FVector(DeltaSpeed_X, DeltaSpeed_Y, 0.0f);
+}
+
+void ARTS_PlayerController::SecondaryAction()
+{
+	FHitResult HitResultLocal;
+
+	if (!bIsUnitSelected)
+	{
+		GetHitResultUnderCursorForObjects(SelectableObjectsEnum, true, HitResultLocal);
+
+		if (HitResultLocal.GetActor() != nullptr)
+		{
+			if (DisplayUnitHUD_Delegate.IsBound())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("ARTS_PlayerController::SecondaryAction() | HitResultLocal.Actor: %f"),
+					*HitResultLocal.GetActor()->GetName());
+
+				DisplayUnitHUD_Delegate.Broadcast(HitResultLocal.GetActor(), false);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::SecondaryAction() | HitResultLocal.Actor: nullptr"));
+			}
+		}
+		/*else
+		{
+			UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::SecondaryAction() | HitResultLocal.Actor: nullptr"));
+		}*/
+	}
+
+	/*UE_LOG(LogTemp, Warning, TEXT("ARTS_PlayerController::SecondaryAction() | HitResultLocal.Actor: %f"),
+		*HitResultLocal.GetActor()->GetName());*/
 }
 
 void ARTS_PlayerController::ReferenceCasts()

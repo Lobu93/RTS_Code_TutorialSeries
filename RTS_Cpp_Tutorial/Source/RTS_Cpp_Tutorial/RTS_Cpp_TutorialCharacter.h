@@ -37,8 +37,6 @@ private:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual void OnConstruction(const FTransform& Transform) override;
-
 public:
 	EFemaleNames FemaleName;
 	EMaleNames MaleName;
@@ -90,7 +88,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Unit|Legend")
 	FSlateBrush FemaleImage;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bool")
+	bool bIsHidden;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gambiarra")
+	bool bCanDisplayUnitHUD;
+
+	UFUNCTION(BlueprintCallable, Category = "References", BlueprintNativeEvent, Category = "References")
 	void ReferenceCast();
+	virtual void ReferenceCast_Implementation();
 
 	EFemaleNames SetFemaleName();
 
@@ -105,5 +111,9 @@ public:
 	void SetUnitBirthday();
 
 	void BirthdayCheck();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Unit")
+	void DisplayUnitHUD(AActor* Actor, bool bBypass);
+	virtual void DisplayUnitHUD_Implementation(AActor* Actor, bool bBypass);
 };
 
