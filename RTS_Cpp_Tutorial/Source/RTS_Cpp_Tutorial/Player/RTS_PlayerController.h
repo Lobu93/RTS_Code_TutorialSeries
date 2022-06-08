@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "../Library/RTS_MarqueeSelection_IF.h"
 #include "RTS_PlayerController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDisplayUnitHUD, class AActor*, HitActor, bool, bBypass);
@@ -11,18 +12,22 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDisplayUnitHUD, class AActor*, Hit
 class ARTS_CameraPawn;
 class ARTS_GameState;
 class ARTS_Cpp_TutorialCharacter;
+class ARTS_MarqueeSelection;
 
 /**
  * 
  */
 UCLASS()
-class RTS_CPP_TUTORIAL_API ARTS_PlayerController : public APlayerController
+class RTS_CPP_TUTORIAL_API ARTS_PlayerController : public APlayerController, public IRTS_MarqueeSelection_IF
 {
 	GENERATED_BODY()
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	// Called every frame
+	virtual void Tick(float InDeltaTime) override;
 
 	// Begin PlayerController interface
 	virtual void SetupInputComponent() override;
@@ -57,8 +62,14 @@ protected:
 
 	void SecondaryAction();
 
+	void PrimaryAction_Pressed();
+
+	void PrimaryAction_Released();
+
 	// Cast references once for the entire code, reduce system drain.
 	void ReferenceCasts();
+
+	void UpdateSelection();
 
 private:
 	// How close can the camera get to the root
@@ -71,12 +82,16 @@ private:
 
 	float EdgeScrollSpeedY;
 
+	float DeltaTime;
+
 public:
 	// This is a reference to our camera Pawn
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 	ARTS_CameraPawn* CameraPawnRef;
 
 	ARTS_GameState* GameStateRef;
+
+	ARTS_MarqueeSelection* MarqueeRef;
 
 	// DisplayUnit HUD Event Dispatcher
 	UPROPERTY(BlueprintAssignable, Category = "Event Dispatcher")
@@ -103,6 +118,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool bDisableCamMovement;
 
+	bool bIsUnitSelected;
+
+	bool bIsBuildingModeActive;
+
+	bool bIsHoldingInput;
+
 	FVector2D MouseLastValidPosition;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Resources")
@@ -114,7 +135,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Resources")
 	int32 MaxResourceLimit;
 
-	bool bIsUnitSelected;
+	float HoldingTime;
 
 	void SpawnUnitDebug();
 

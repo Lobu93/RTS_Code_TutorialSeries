@@ -11,6 +11,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
+#include "../HUD/RTS_MarqueeSelection.h"
 #include "GameFramework/PlayerInput.h"
 
 
@@ -29,6 +30,18 @@ void ARTS_PlayerController::BeginPlay()
 
 	DefaultMouseCursor = EMouseCursor::Hand;
 
+}
+
+void ARTS_PlayerController::Tick(float InDeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	DeltaTime = InDeltaTime;
+
+	if (bIsHoldingInput)
+	{
+		UpdateSelection();
+	}
 }
 
 void ARTS_PlayerController::SetupInputComponent()
@@ -53,6 +66,9 @@ void ARTS_PlayerController::SetupInputComponent()
 	InputComponent->BindAction("SpeedModifier", IE_Released, this, &ARTS_PlayerController::SpeedModifierReleased);
 
 	InputComponent->BindAction("SecondaryAction", IE_Pressed, this, &ARTS_PlayerController::SecondaryAction);
+
+	InputComponent->BindAction("PrimaryAction", IE_Pressed, this, &ARTS_PlayerController::PrimaryAction_Pressed);
+	InputComponent->BindAction("PrimaryAction", IE_Released, this, &ARTS_PlayerController::PrimaryAction_Released);
 
 	FInputActionKeyMapping SpawnMapping("SpawnName", EKeys::V, 0, 0, 0, 0);
 	this->PlayerInput->AddActionMapping(SpawnMapping);
@@ -323,6 +339,28 @@ void ARTS_PlayerController::SecondaryAction()
 		*HitResultLocal.GetActor()->GetName());*/
 }
 
+void ARTS_PlayerController::PrimaryAction_Pressed()
+{
+	if (!bIsBuildingModeActive)
+	{
+		MarqueeRef->OnInputStart();
+
+		HoldingTime = 0.0f;
+
+		bIsHoldingInput = true;
+	}
+}
+
+void ARTS_PlayerController::PrimaryAction_Released()
+{
+	if (!bIsBuildingModeActive)
+	{
+		MarqueeRef->OnInputRelease(HoldingTime);
+
+		bIsHoldingInput = false;
+	}
+}
+
 void ARTS_PlayerController::ReferenceCasts()
 {
 	CameraPawnRef = (ARTS_CameraPawn*)UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
@@ -335,6 +373,22 @@ void ARTS_PlayerController::ReferenceCasts()
 	if (!GameStateRef)
 	{
 		UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::ReferenceCasts() Bad GameState Class"));
+	}
+
+	MarqueeRef = (ARTS_MarqueeSelection*)this->GetHUD();
+	if (!MarqueeRef)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::ReferenceCasts() Bad MarqueeSelection Class"));
+	}
+}
+
+void ARTS_PlayerController::UpdateSelection()
+{
+	if (bIsHoldingInput)
+	{
+		HoldingTime += DeltaTime;
+
+		MarqueeRef->OnInputHold();
 	}
 }
 
