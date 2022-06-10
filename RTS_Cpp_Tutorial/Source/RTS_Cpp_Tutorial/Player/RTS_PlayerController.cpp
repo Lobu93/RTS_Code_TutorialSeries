@@ -392,6 +392,11 @@ void ARTS_PlayerController::UpdateSelection()
 	}
 }
 
+void ARTS_PlayerController::SetSelectedUnits(TArray<ARTS_Cpp_TutorialCharacter*> InSelectedUnits)
+{
+	SelectedUnits = InSelectedUnits;
+}
+
 void ARTS_PlayerController::SpawnUnitDebug()
 {
 	FHitResult HitResult;

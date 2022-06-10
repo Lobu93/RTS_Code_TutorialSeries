@@ -282,3 +282,19 @@ void ARTS_Cpp_TutorialCharacter::DisplayUnitHUD_Implementation(AActor* Actor, bo
 		bCanDisplayUnitHUD = false;
 	}
 }
+
+void ARTS_Cpp_TutorialCharacter::SetSelectedDecal()
+{
+	DeselectedDecal->SetVisibility(false);
+	DeselectedDecal->SetHiddenInGame(true);
+	SelectedDecal->SetVisibility(true);
+	SelectedDecal->SetHiddenInGame(false);
+}
+
+void ARTS_Cpp_TutorialCharacter::SetDeselectedDecal()
+{
+	SelectedDecal->SetVisibility(false);
+	SelectedDecal->SetHiddenInGame(true);
+	DeselectedDecal->SetVisibility(true);
+	DeselectedDecal->SetHiddenInGame(false);
+}

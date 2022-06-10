@@ -94,6 +94,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gambiarra")
 	bool bCanDisplayUnitHUD;
 
+	bool bIsSelected;
+
 	UFUNCTION(BlueprintCallable, Category = "References", BlueprintNativeEvent, Category = "References")
 	void ReferenceCast();
 	virtual void ReferenceCast_Implementation();
@@ -115,5 +117,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Unit")
 	void DisplayUnitHUD(AActor* Actor, bool bBypass);
 	virtual void DisplayUnitHUD_Implementation(AActor* Actor, bool bBypass);
+
+	void SetSelectedDecal();
+
+	void SetDeselectedDecal();
 };
 

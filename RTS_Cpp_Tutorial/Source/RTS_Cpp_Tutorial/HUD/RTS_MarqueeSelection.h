@@ -31,10 +31,17 @@ public:
 
 	UPROPERTY()
 	TArray<ARTS_Cpp_TutorialCharacter*> SelectedUnits;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Unit")
+	TSubclassOf<ARTS_Cpp_TutorialCharacter> ClassFilter;
+
+	TArray<AActor*> UnitsInSelectionArea;
+
+	ARTS_Cpp_TutorialCharacter* SelectedUnit;
 
 	FVector2D ClickedLocation;
 	FVector2D HoldingLocation;
-	bool bIsDrawing;
+	bool bIsDrawing;	
 
 	void OnInputStart();
 

@@ -9,11 +9,34 @@ void ARTS_MarqueeSelection::DrawHUD()
 {
 	Super::DrawHUD();
 
-	// ReceiveDrawHUD()
+	// TSubclassOf<ARTS_Cpp_TutorialCharacter> ClassFilter;
+	// ARTS_Cpp_TutorialCharacter ClassFilter;
 
 	if (bIsDrawing)
 	{
 		DrawMarquee();
+
+		GetActorsInSelectionRectangle(ClassFilter, ClickedLocation, HoldingLocation, UnitsInSelectionArea,
+			false, false);
+
+		for (auto UnitElement : UnitsInSelectionArea)
+		{
+			if (UnitElement->GetClass()->IsChildOf<ARTS_Cpp_TutorialCharacter>())
+			{
+				/*UE_LOG(LogTemp, Warning, TEXT("ARTS_MarqueeSelection::DrawHUD() | UnitsInSelectionArea.Num(): %d"),
+					UnitsInSelectionArea.Num());*/
+
+				SelectedUnit = Cast<ARTS_Cpp_TutorialCharacter>(UnitElement);
+
+				SelectedUnits.AddUnique(SelectedUnit);
+
+				for (auto Unit : SelectedUnits)
+				{
+					Unit->SetSelectedDecal();
+					Unit->bIsSelected = true;
+				}
+			}
+		}
 	}
 }
 
@@ -32,28 +55,31 @@ void ARTS_MarqueeSelection::BeginPlay()
 
 void ARTS_MarqueeSelection::OnInputStart()
 {
-	// float MousePosition_X_Local;
-
 	if (SelectedUnits.Num() >= 1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ARTS_MarqueeSelection::OnInputStart() | SelectedUnits.Num() >= 1"));
+		for (auto Unit : SelectedUnits)
+		{
+			Unit->SetDeselectedDecal();
+			Unit->bIsSelected = false;
+		}
+
+		SelectedUnits.Empty();
 	}
-	else
-	{
-		ControllerRef->GetMousePosition(ClickedLocation.X, ClickedLocation.Y);
-		HoldingLocation = ClickedLocation;
-		bIsDrawing = true;
-	}
+
+	ControllerRef->GetMousePosition(ClickedLocation.X, ClickedLocation.Y);
+	HoldingLocation = ClickedLocation;
+	bIsDrawing = true;
 }
 
 void ARTS_MarqueeSelection::OnInputRelease(float HoldTime)
 {
 	bIsDrawing = false;
+	ControllerRef->SetSelectedUnits(SelectedUnits);
 }
 
 void ARTS_MarqueeSelection::OnInputHold()
 {
-	ControllerRef->GetMousePosition(ClickedLocation.X, ClickedLocation.Y);
+	ControllerRef->GetMousePosition(HoldingLocation.X, HoldingLocation.Y);
 }
 
 void ARTS_MarqueeSelection::DrawMarquee()

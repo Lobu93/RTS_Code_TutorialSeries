@@ -99,6 +99,8 @@ public:
 
 	const TArray<TEnumAsByte<EObjectTypeQuery>> SelectableObjectsEnum;
 
+	TArray<ARTS_Cpp_TutorialCharacter*> SelectedUnits;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
 	TSubclassOf<ARTS_Cpp_TutorialCharacter> UnitForDebug;
 
@@ -136,6 +138,8 @@ public:
 	int32 MaxResourceLimit;
 
 	float HoldingTime;
+
+	void SetSelectedUnits(TArray<ARTS_Cpp_TutorialCharacter*> InSelectedUnits);
 
 	void SpawnUnitDebug();
 
