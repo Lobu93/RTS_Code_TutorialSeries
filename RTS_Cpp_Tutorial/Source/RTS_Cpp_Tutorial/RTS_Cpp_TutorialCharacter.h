@@ -18,7 +18,7 @@ class ARTS_Cpp_TutorialCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	ARTS_Cpp_TutorialCharacter();
+	ARTS_Cpp_TutorialCharacter(const class FObjectInitializer& ObjectInitializer);
 
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
@@ -36,6 +36,8 @@ private:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	class AAIController* UnitAIController;
 
 public:
 	EFemaleNames FemaleName;

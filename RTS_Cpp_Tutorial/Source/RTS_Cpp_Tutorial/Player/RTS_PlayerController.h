@@ -13,6 +13,7 @@ class ARTS_CameraPawn;
 class ARTS_GameState;
 class ARTS_Cpp_TutorialCharacter;
 class ARTS_MarqueeSelection;
+class UDecalComponent;
 
 /**
  * 
@@ -70,6 +71,8 @@ protected:
 	void ReferenceCasts();
 
 	void UpdateSelection();
+
+	void GetUnitHUD();
 
 private:
 	// How close can the camera get to the root
@@ -139,7 +142,20 @@ public:
 
 	float HoldingTime;
 
+	FVector TargetLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
+	UMaterial* DecalMaterial;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+	UDecalComponent* PreviousLocationDecal;
+
 	void SetSelectedUnits(TArray<ARTS_Cpp_TutorialCharacter*> InSelectedUnits);
+
+	TScriptDelegate<FWeakObjectPtr> MovementCompleteDelegate;
+
+	UFUNCTION()
+	void AIMoveCompleted();
 
 	void SpawnUnitDebug();
 

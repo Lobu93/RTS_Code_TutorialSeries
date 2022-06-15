@@ -15,8 +15,10 @@
 #include "Player/RTS_PlayerController.h"
 #include "GameSettings/RTS_GameState.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "AIController.h"
 
-ARTS_Cpp_TutorialCharacter::ARTS_Cpp_TutorialCharacter()
+ARTS_Cpp_TutorialCharacter::ARTS_Cpp_TutorialCharacter(const class FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -31,6 +33,7 @@ ARTS_Cpp_TutorialCharacter::ARTS_Cpp_TutorialCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+	//GetCharacterMovement()->MaxAcceleration = 100000.0f;
 
 	// Create a decal in the world to show the cursor's location
 	SelectedDecal = CreateDefaultSubobject<UDecalComponent>("SelectedDecal");
@@ -61,6 +64,10 @@ ARTS_Cpp_TutorialCharacter::ARTS_Cpp_TutorialCharacter()
 // Called when the game starts or when spawned
 void ARTS_Cpp_TutorialCharacter::BeginPlay()
 {
+	Super::BeginPlay();
+
+	GetCharacterMovement()->bAutoActivate = true;
+
 	if (bIsSpawnedIn)
 	{
 		SetUnitFeatures();
@@ -76,6 +83,13 @@ void ARTS_Cpp_TutorialCharacter::BeginPlay()
 	}*/
 
 	SetUnitBirthday();
+
+	UnitAIController = Cast<AAIController>(GetController());
+
+	if (UnitAIController)
+	{
+		UnitAIController->ReceiveMoveCompleted.Add(ControllerRef->MovementCompleteDelegate);
+	}
 }
 
 void ARTS_Cpp_TutorialCharacter::Tick(float DeltaSeconds)
@@ -219,8 +233,8 @@ void ARTS_Cpp_TutorialCharacter::SetUnitFeatures()
 		UnitProfile.Age = UnitAge;
 		UnitProfile.UnitImage = UnitImage;
 
-		UE_LOG(LogTemp, Warning, TEXT("ARTS_Cpp_TutorialCharacter::SetUnitFeatures() | Name: %s Sex: %d Age: %d"), 
-			*UnitProfile.Name, UnitProfile.Sex, UnitProfile.Age);
+		/*UE_LOG(LogTemp, Warning, TEXT("ARTS_Cpp_TutorialCharacter::SetUnitFeatures() | Name: %s Sex: %d Age: %d"), 
+			*UnitProfile.Name, UnitProfile.Sex, UnitProfile.Age);*/
 	}
 	else
 	{
@@ -233,8 +247,8 @@ void ARTS_Cpp_TutorialCharacter::SetUnitFeatures()
 		UnitProfile.Age = UnitAge;
 		UnitProfile.UnitImage = UnitImage;
 
-		UE_LOG(LogTemp, Warning, TEXT("ARTS_Cpp_TutorialCharacter::SetUnitFeatures() | Name: %s Sex: %d Age: %d"),
-			*UnitProfile.Name, UnitProfile.Sex, UnitProfile.Age);
+		/*UE_LOG(LogTemp, Warning, TEXT("ARTS_Cpp_TutorialCharacter::SetUnitFeatures() | Name: %s Sex: %d Age: %d"),
+			*UnitProfile.Name, UnitProfile.Sex, UnitProfile.Age);*/
 	}
 
 	if (DynMaterial)

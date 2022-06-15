@@ -61,6 +61,7 @@ void ARTS_MarqueeSelection::OnInputStart()
 		{
 			Unit->SetDeselectedDecal();
 			Unit->bIsSelected = false;
+			ControllerRef->bIsUnitSelected = false;
 		}
 
 		SelectedUnits.Empty();

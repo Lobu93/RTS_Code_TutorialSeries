@@ -11,8 +11,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
+#include "AIController.h"
 #include "../HUD/RTS_MarqueeSelection.h"
 #include "GameFramework/PlayerInput.h"
+#include "Components/DecalComponent.h"
 
 
 // Called when the game starts or when spawned
@@ -30,6 +32,7 @@ void ARTS_PlayerController::BeginPlay()
 
 	DefaultMouseCursor = EMouseCursor::Hand;
 
+	MovementCompleteDelegate.BindUFunction(this, "AIMoveCompleted");
 }
 
 void ARTS_PlayerController::Tick(float InDeltaTime)
@@ -309,34 +312,49 @@ FVector ARTS_PlayerController::EdgeScroll()
 
 void ARTS_PlayerController::SecondaryAction()
 {
-	FHitResult HitResultLocal;
-
-	if (!bIsUnitSelected)
+	if (bIsUnitSelected)
 	{
-		GetHitResultUnderCursorForObjects(SelectableObjectsEnum, true, HitResultLocal);
+		FHitResult HitResultLocal;
+		AActor* OtherActor;
+		FVector DecalSize(32.0f, 64.0f, 64.0f);
+		FRotator DecalRotation(-90.0f, 0.0f, 0.0f);
+		ETraceTypeQuery TraceTypeLocal;
+		AAIController* AIControllerLocal;
 
-		if (HitResultLocal.GetActor() != nullptr)
+		TraceTypeLocal = UEngineTypes::ConvertToTraceType(ECC_Visibility);
+
+		GetHitResultUnderCursorByChannel(TraceTypeLocal, false, HitResultLocal);
+
+		OtherActor = Cast<AActor>(HitResultLocal.GetActor());
+		TargetLocation = HitResultLocal.Location;
+
+		if (IsValid(PreviousLocationDecal))
 		{
-			if (DisplayUnitHUD_Delegate.IsBound())
-			{
-				UE_LOG(LogTemp, Warning, TEXT("ARTS_PlayerController::SecondaryAction() | HitResultLocal.Actor: %f"),
-					*HitResultLocal.GetActor()->GetName());
+			PreviousLocationDecal->DestroyComponent();
 
-				DisplayUnitHUD_Delegate.Broadcast(HitResultLocal.GetActor(), false);
-			}
-			else
+			for (auto Unit : SelectedUnits)
 			{
-				UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::SecondaryAction() | HitResultLocal.Actor: nullptr"));
+				AIControllerLocal = Cast<AAIController>(Unit->GetController());
+				AIControllerLocal->StopMovement();
 			}
 		}
-		/*else
-		{
-			UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::SecondaryAction() | HitResultLocal.Actor: nullptr"));
-		}*/
-	}
 
-	/*UE_LOG(LogTemp, Warning, TEXT("ARTS_PlayerController::SecondaryAction() | HitResultLocal.Actor: %f"),
-		*HitResultLocal.GetActor()->GetName());*/
+		PreviousLocationDecal = UGameplayStatics::SpawnDecalAtLocation(OtherActor, DecalMaterial, DecalSize, TargetLocation, DecalRotation);
+
+		for (auto Unit : SelectedUnits)
+		{
+			AIControllerLocal = Cast<AAIController>(Unit->GetController());
+			
+			if (AIControllerLocal != nullptr)
+			{
+				AIControllerLocal->MoveToLocation(TargetLocation, -1.0f, false);			
+			}			
+		}
+	}
+	else
+	{
+		GetUnitHUD();
+	}
 }
 
 void ARTS_PlayerController::PrimaryAction_Pressed()
@@ -392,9 +410,49 @@ void ARTS_PlayerController::UpdateSelection()
 	}
 }
 
+void ARTS_PlayerController::GetUnitHUD()
+{
+	FHitResult HitResultLocal;
+
+	GetHitResultUnderCursorForObjects(SelectableObjectsEnum, true, HitResultLocal);
+
+	if (HitResultLocal.GetActor() != nullptr)
+	{
+		if (DisplayUnitHUD_Delegate.IsBound())
+		{
+			DisplayUnitHUD_Delegate.Broadcast(HitResultLocal.GetActor(), false);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::SecondaryAction() | HitResultLocal.Actor: nullptr"));
+		}
+	}
+}
+
+void ARTS_PlayerController::AIMoveCompleted()
+{
+	if (IsValid(PreviousLocationDecal))
+	{
+		AAIController* AIControllerLocal;
+
+		for (auto Unit : SelectedUnits)
+		{
+			AIControllerLocal = Cast<AAIController>(Unit->GetController());
+			AIControllerLocal->StopMovement();
+		}
+
+		PreviousLocationDecal->DestroyComponent();
+	}
+}
+
 void ARTS_PlayerController::SetSelectedUnits(TArray<ARTS_Cpp_TutorialCharacter*> InSelectedUnits)
 {
 	SelectedUnits = InSelectedUnits;
+
+	if (SelectedUnits.Num() >= 1)
+	{
+		bIsUnitSelected = true;
+	}
 }
 
 void ARTS_PlayerController::SpawnUnitDebug()
@@ -408,7 +466,7 @@ void ARTS_PlayerController::SpawnUnitDebug()
 	UnitLocationLocal.Z = 150.0f;
 
 	// For Debug Only
-	GameStateRef->GetAllUnits();
+	// GameStateRef->GetAllUnits();
 
 	GetWorld()->SpawnActor<ARTS_Cpp_TutorialCharacter>(UnitForDebug, UnitLocationLocal, UnitRotationLocal, SpawnInfo);
 }
