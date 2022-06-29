@@ -8,6 +8,7 @@
 #include "RTS_MarqueeSelection.generated.h"
 
 class ARTS_Cpp_TutorialCharacter;
+class ARTS_GroundVehicleMaster;
 class ARTS_PlayerController;
 
 /**
@@ -31,13 +32,21 @@ public:
 
 	UPROPERTY()
 	TArray<ARTS_Cpp_TutorialCharacter*> SelectedUnits;
+
+	UPROPERTY()
+	TArray<ARTS_GroundVehicleMaster*> SelectedGroundVehicles;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Unit")
 	TSubclassOf<ARTS_Cpp_TutorialCharacter> ClassFilter;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Unit")
+	TSubclassOf<ARTS_GroundVehicleMaster> ClassFilterVehicle;
+
 	TArray<AActor*> UnitsInSelectionArea;
+	TArray<AActor*> GroundVehiclesInSelectionArea;
 
 	ARTS_Cpp_TutorialCharacter* SelectedUnit;
+	ARTS_GroundVehicleMaster* SelectedGroundVehicle;
 
 	FVector2D ClickedLocation;
 	FVector2D HoldingLocation;

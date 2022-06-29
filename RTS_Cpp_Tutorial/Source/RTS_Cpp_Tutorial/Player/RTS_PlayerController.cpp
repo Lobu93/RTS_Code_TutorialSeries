@@ -6,6 +6,7 @@
 #include "../GameSettings/RTS_GameState.h"
 #include "../Library/RTS_FuncLib.h"
 #include "../RTS_Cpp_TutorialCharacter.h"
+#include "../Units/GroundVehicles/RTS_GroundVehicleMaster.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -315,11 +316,7 @@ void ARTS_PlayerController::SecondaryAction()
 	if (bIsUnitSelected)
 	{
 		FHitResult HitResultLocal;
-		AActor* OtherActor;
-		FVector DecalSize(32.0f, 64.0f, 64.0f);
-		FRotator DecalRotation(-90.0f, 0.0f, 0.0f);
 		ETraceTypeQuery TraceTypeLocal;
-		AAIController* AIControllerLocal;
 
 		TraceTypeLocal = UEngineTypes::ConvertToTraceType(ECC_Visibility);
 
@@ -328,28 +325,7 @@ void ARTS_PlayerController::SecondaryAction()
 		OtherActor = Cast<AActor>(HitResultLocal.GetActor());
 		TargetLocation = HitResultLocal.Location;
 
-		if (IsValid(PreviousLocationDecal))
-		{
-			PreviousLocationDecal->DestroyComponent();
-
-			for (auto Unit : SelectedUnits)
-			{
-				AIControllerLocal = Cast<AAIController>(Unit->GetController());
-				AIControllerLocal->StopMovement();
-			}
-		}
-
-		PreviousLocationDecal = UGameplayStatics::SpawnDecalAtLocation(OtherActor, DecalMaterial, DecalSize, TargetLocation, DecalRotation);
-
-		for (auto Unit : SelectedUnits)
-		{
-			AIControllerLocal = Cast<AAIController>(Unit->GetController());
-			
-			if (AIControllerLocal != nullptr)
-			{
-				AIControllerLocal->MoveToLocation(TargetLocation, -1.0f, false);			
-			}			
-		}
+		UnitMovement();
 	}
 	else
 	{
@@ -429,6 +405,34 @@ void ARTS_PlayerController::GetUnitHUD()
 	}
 }
 
+void ARTS_PlayerController::UnitMovement()
+{
+	FVector DecalSize(32.0f, 64.0f, 64.0f);
+	FRotator DecalRotation(-90.0f, 0.0f, 0.0f);
+	AAIController* AIControllerLocal;
+
+	if (SelectedUnits.Num() >= 1)
+	{
+		for (auto Unit : SelectedUnits)
+		{
+			AIControllerLocal = Cast<AAIController>(Unit->GetController());
+
+			if (AIControllerLocal != nullptr)
+			{
+				if (IsValid(PreviousLocationDecal))
+				{
+					PreviousLocationDecal->DestroyComponent();
+					AIControllerLocal->StopMovement();
+				}
+
+				PreviousLocationDecal = UGameplayStatics::SpawnDecalAtLocation(OtherActor, DecalMaterial, DecalSize, TargetLocation, DecalRotation);
+
+				AIControllerLocal->MoveToLocation(TargetLocation, -1.0f, false);
+			}
+		}
+	}
+}
+
 void ARTS_PlayerController::AIMoveCompleted()
 {
 	if (IsValid(PreviousLocationDecal))
@@ -445,11 +449,12 @@ void ARTS_PlayerController::AIMoveCompleted()
 	}
 }
 
-void ARTS_PlayerController::SetSelectedUnits(TArray<ARTS_Cpp_TutorialCharacter*> InSelectedUnits)
+void ARTS_PlayerController::SetSelectedUnits(TArray<ARTS_Cpp_TutorialCharacter*> InSelectedUnits, TArray<ARTS_GroundVehicleMaster*> SelectedVehicles)
 {
 	SelectedUnits = InSelectedUnits;
+	SelectedGroundVehicles = SelectedVehicles;
 
-	if (SelectedUnits.Num() >= 1)
+	if ((SelectedUnits.Num() >= 1) || (SelectedGroundVehicles.Num() >= 1))
 	{
 		bIsUnitSelected = true;
 	}

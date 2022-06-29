@@ -12,6 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDisplayUnitHUD, class AActor*, Hit
 class ARTS_CameraPawn;
 class ARTS_GameState;
 class ARTS_Cpp_TutorialCharacter;
+class ARTS_GroundVehicleMaster;
 class ARTS_MarqueeSelection;
 class UDecalComponent;
 
@@ -74,6 +75,8 @@ protected:
 
 	void GetUnitHUD();
 
+	void UnitMovement();
+
 private:
 	// How close can the camera get to the root
 	float MinZoomLimit = 300.0f;
@@ -103,6 +106,8 @@ public:
 	const TArray<TEnumAsByte<EObjectTypeQuery>> SelectableObjectsEnum;
 
 	TArray<ARTS_Cpp_TutorialCharacter*> SelectedUnits;
+	TArray<ARTS_GroundVehicleMaster*> SelectedGroundVehicles;
+	AActor* OtherActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
 	TSubclassOf<ARTS_Cpp_TutorialCharacter> UnitForDebug;
@@ -150,7 +155,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 	UDecalComponent* PreviousLocationDecal;
 
-	void SetSelectedUnits(TArray<ARTS_Cpp_TutorialCharacter*> InSelectedUnits);
+	void SetSelectedUnits(TArray<ARTS_Cpp_TutorialCharacter*> InSelectedUnits, 
+		TArray<ARTS_GroundVehicleMaster*> SelectedVehicles);
 
 	TScriptDelegate<FWeakObjectPtr> MovementCompleteDelegate;
 
