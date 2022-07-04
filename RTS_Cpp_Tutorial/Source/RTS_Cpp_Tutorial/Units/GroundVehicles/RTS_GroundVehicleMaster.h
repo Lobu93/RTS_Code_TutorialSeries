@@ -6,6 +6,9 @@
 #include "WheeledVehiclePawn.h"
 #include "RTS_GroundVehicleMaster.generated.h"
 
+class UChaosWheeledVehicleMovementComponent;
+class ARTS_PlayerController;
+
 /**
  * 
  */
@@ -18,7 +21,9 @@ public:
 	ARTS_GroundVehicleMaster();
 
 protected:
-	// virtual void BeginPlay() override;
+	virtual void BeginPlay() override;
+
+	UChaosWheeledVehicleMovementComponent* VehicleMovComp;
 
 	/** A decal that projects to the cursor location. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -28,9 +33,20 @@ protected:
 	class UDecalComponent* DeselectedDecal;
 
 public:
+	ARTS_PlayerController* ControllerRef;
 	bool bIsSelected;
+	FVector Target;
+	float InitialDistance;
+	float StartingTime;
 
 	void SetSelectedDecal();
 
 	void SetDeselectedDecal();
+
+	void MoveToLocation(FVector TargetLocation);
+
+	UFUNCTION()
+	void UpdateMovement();
+
+	void ReceiveMoveCommand(FVector TargetLocation);
 };

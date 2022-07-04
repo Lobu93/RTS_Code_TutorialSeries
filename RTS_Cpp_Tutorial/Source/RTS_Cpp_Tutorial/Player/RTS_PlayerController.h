@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDisplayUnitHUD, class AActor*, Hit
 class ARTS_CameraPawn;
 class ARTS_GameState;
 class ARTS_Cpp_TutorialCharacter;
-class ARTS_GroundVehicleMaster;
+class ATP_VehiclePawn;
 class ARTS_MarqueeSelection;
 class UDecalComponent;
 
@@ -77,6 +77,8 @@ protected:
 
 	void UnitMovement();
 
+	void VehicleMovement();
+
 private:
 	// How close can the camera get to the root
 	float MinZoomLimit = 300.0f;
@@ -106,7 +108,7 @@ public:
 	const TArray<TEnumAsByte<EObjectTypeQuery>> SelectableObjectsEnum;
 
 	TArray<ARTS_Cpp_TutorialCharacter*> SelectedUnits;
-	TArray<ARTS_GroundVehicleMaster*> SelectedGroundVehicles;
+	TArray<ATP_VehiclePawn*> SelectedGroundVehicles;
 	AActor* OtherActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
@@ -155,13 +157,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 	UDecalComponent* PreviousLocationDecal;
 
-	void SetSelectedUnits(TArray<ARTS_Cpp_TutorialCharacter*> InSelectedUnits, 
-		TArray<ARTS_GroundVehicleMaster*> SelectedVehicles);
-
+	void SetSelectedUnits(TArray<ARTS_Cpp_TutorialCharacter*> InSelectedUnits, TArray<ATP_VehiclePawn*> SelectedVehicles);
+	
 	TScriptDelegate<FWeakObjectPtr> MovementCompleteDelegate;
 
 	UFUNCTION()
 	void AIMoveCompleted();
+
+	void RemoveLocationDecals();
 
 	void SpawnUnitDebug();
 

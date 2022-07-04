@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "4.26",
+	"EngineAssociation": "4.27",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -11,13 +11,18 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"AIModule",
-				"PhysXVehicles"
+				"PhysXVehicles",
+				"ChaosVehicles"
 			]
 		}
 	],
 	"Plugins": [
 		{
 			"Name": "ChaosVehiclesPlugin",
+			"Enabled": true
+		},
+		{
+			"Name": "PhysXVehicles",
 			"Enabled": true
 		}
 	]

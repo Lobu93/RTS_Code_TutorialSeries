@@ -4,7 +4,7 @@
 #include "RTS_MarqueeSelection.h"
 #include "../Player/RTS_PlayerController.h"
 #include "../RTS_Cpp_TutorialCharacter.h"
-#include "../Units/GroundVehicles/RTS_GroundVehicleMaster.h"
+#include "../TP_Vehicle/TP_VehiclePawn.h"
 
 void ARTS_MarqueeSelection::DrawHUD()
 {
@@ -39,21 +39,21 @@ void ARTS_MarqueeSelection::DrawHUD()
 			}
 		}
 
-		GetActorsInSelectionRectangle(ClassFilterVehicle, ClickedLocation, HoldingLocation, GroundVehiclesInSelectionArea,
+		GetActorsInSelectionRectangle(ClassFilterVehicle, ClickedLocation, HoldingLocation, VehicleUnitsInSelectedArea,
 			false, false);
 
-		for (auto UnitElement : GroundVehiclesInSelectionArea)
+		for (auto UnitElement : VehicleUnitsInSelectedArea)
 		{
-			if (UnitElement->GetClass()->IsChildOf<ARTS_GroundVehicleMaster>())
+			if (UnitElement->GetClass()->IsChildOf<ATP_VehiclePawn>())
 			{
-				/*UE_LOG(LogTemp, Warning, TEXT("ARTS_MarqueeSelection::DrawHUD() | GroundVehiclesInSelectionArea.Num(): %d"),
-					GroundVehiclesInSelectionArea.Num());*/
+				/*UE_LOG(LogTemp, Warning, TEXT("ARTS_MarqueeSelection::DrawHUD() | VehicleUnitsInSelectedArea.Num(): %d"),
+					VehicleUnitsInSelectedArea.Num());*/
 
-				SelectedGroundVehicle = Cast<ARTS_GroundVehicleMaster>(UnitElement);
+				SelectedVehicle = Cast<ATP_VehiclePawn>(UnitElement);
 
-				SelectedGroundVehicles.AddUnique(SelectedGroundVehicle);
+				SelectedVehicles.AddUnique(SelectedVehicle);
 
-				for (auto Unit : SelectedGroundVehicles)
+				for (auto Unit : SelectedVehicles)
 				{
 					Unit->SetSelectedDecal();
 					Unit->bIsSelected = true;
@@ -78,7 +78,7 @@ void ARTS_MarqueeSelection::BeginPlay()
 
 void ARTS_MarqueeSelection::OnInputStart()
 {
-	if (SelectedUnits.Num() >= 1)
+	if (SelectedUnits.Num() >= 1 || SelectedVehicles.Num() >= 1)
 	{
 		for (auto Unit : SelectedUnits)
 		{
@@ -89,14 +89,14 @@ void ARTS_MarqueeSelection::OnInputStart()
 
 		SelectedUnits.Empty();
 
-		for (auto Unit : SelectedGroundVehicles)
+		for (auto Unit : SelectedVehicles)
 		{
 			Unit->SetDeselectedDecal();
 			Unit->bIsSelected = false;
 			ControllerRef->bIsUnitSelected = false;
 		}
 
-		SelectedGroundVehicles.Empty();
+		SelectedVehicles.Empty();
 	}
 
 	ControllerRef->GetMousePosition(ClickedLocation.X, ClickedLocation.Y);
@@ -107,7 +107,7 @@ void ARTS_MarqueeSelection::OnInputStart()
 void ARTS_MarqueeSelection::OnInputRelease(float HoldTime)
 {
 	bIsDrawing = false;
-	ControllerRef->SetSelectedUnits(SelectedUnits, SelectedGroundVehicles);	
+	ControllerRef->SetSelectedUnits(SelectedUnits, SelectedVehicles);	
 }
 
 void ARTS_MarqueeSelection::OnInputHold()

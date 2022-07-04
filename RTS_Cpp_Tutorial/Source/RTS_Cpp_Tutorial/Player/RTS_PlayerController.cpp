@@ -6,7 +6,7 @@
 #include "../GameSettings/RTS_GameState.h"
 #include "../Library/RTS_FuncLib.h"
 #include "../RTS_Cpp_TutorialCharacter.h"
-#include "../Units/GroundVehicles/RTS_GroundVehicleMaster.h"
+#include "../TP_Vehicle/TP_VehiclePawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -326,6 +326,7 @@ void ARTS_PlayerController::SecondaryAction()
 		TargetLocation = HitResultLocal.Location;
 
 		UnitMovement();
+		VehicleMovement();
 	}
 	else
 	{
@@ -433,6 +434,29 @@ void ARTS_PlayerController::UnitMovement()
 	}
 }
 
+void ARTS_PlayerController::VehicleMovement()
+{
+	FVector DecalSize(32.0f, 64.0f, 64.0f);
+	FRotator DecalRotation(-90.0f, 0.0f, 0.0f);
+
+	if (SelectedGroundVehicles.Num() >= 1)
+	{
+		for (auto Unit : SelectedGroundVehicles)
+		{
+			if (IsValid(PreviousLocationDecal))
+			{
+				PreviousLocationDecal->DestroyComponent();
+			}
+
+			FVector DebugLocation = Unit->ActorToMove->GetActorLocation();
+
+			PreviousLocationDecal = UGameplayStatics::SpawnDecalAtLocation(OtherActor, DecalMaterial, DecalSize, TargetLocation, DecalRotation);
+
+			Unit->ReceiveMoveCommand(TargetLocation);
+		}
+	}
+}
+
 void ARTS_PlayerController::AIMoveCompleted()
 {
 	if (IsValid(PreviousLocationDecal))
@@ -449,7 +473,15 @@ void ARTS_PlayerController::AIMoveCompleted()
 	}
 }
 
-void ARTS_PlayerController::SetSelectedUnits(TArray<ARTS_Cpp_TutorialCharacter*> InSelectedUnits, TArray<ARTS_GroundVehicleMaster*> SelectedVehicles)
+void ARTS_PlayerController::RemoveLocationDecals()
+{
+	if (IsValid(PreviousLocationDecal))
+	{
+		PreviousLocationDecal->DestroyComponent();
+	}
+}
+
+void ARTS_PlayerController::SetSelectedUnits(TArray<ARTS_Cpp_TutorialCharacter*> InSelectedUnits, TArray<ATP_VehiclePawn*> SelectedVehicles)
 {
 	SelectedUnits = InSelectedUnits;
 	SelectedGroundVehicles = SelectedVehicles;
