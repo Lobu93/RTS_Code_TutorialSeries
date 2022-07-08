@@ -10,9 +10,6 @@ void ARTS_MarqueeSelection::DrawHUD()
 {
 	Super::DrawHUD();
 
-	// TSubclassOf<ARTS_Cpp_TutorialCharacter> ClassFilter;
-	// ARTS_Cpp_TutorialCharacter ClassFilter;
-
 	if (bIsDrawing)
 	{
 		DrawMarquee();
@@ -20,46 +17,8 @@ void ARTS_MarqueeSelection::DrawHUD()
 		GetActorsInSelectionRectangle(ClassFilter, ClickedLocation, HoldingLocation, UnitsInSelectionArea,
 			false, false);
 
-		for (auto UnitElement : UnitsInSelectionArea)
-		{
-			if (UnitElement->GetClass()->IsChildOf<ARTS_Cpp_TutorialCharacter>())
-			{
-				/*UE_LOG(LogTemp, Warning, TEXT("ARTS_MarqueeSelection::DrawHUD() | UnitsInSelectionArea.Num(): %d"),
-					UnitsInSelectionArea.Num());*/
-
-				SelectedUnit = Cast<ARTS_Cpp_TutorialCharacter>(UnitElement);
-
-				SelectedUnits.AddUnique(SelectedUnit);
-
-				for (auto Unit : SelectedUnits)
-				{
-					Unit->SetSelectedDecal();
-					Unit->bIsSelected = true;
-				}
-			}
-		}
-
 		GetActorsInSelectionRectangle(ClassFilterVehicle, ClickedLocation, HoldingLocation, VehicleUnitsInSelectedArea,
 			false, false);
-
-		for (auto UnitElement : VehicleUnitsInSelectedArea)
-		{
-			if (UnitElement->GetClass()->IsChildOf<ATP_VehiclePawn>())
-			{
-				/*UE_LOG(LogTemp, Warning, TEXT("ARTS_MarqueeSelection::DrawHUD() | VehicleUnitsInSelectedArea.Num(): %d"),
-					VehicleUnitsInSelectedArea.Num());*/
-
-				SelectedVehicle = Cast<ATP_VehiclePawn>(UnitElement);
-
-				SelectedVehicles.AddUnique(SelectedVehicle);
-
-				for (auto Unit : SelectedVehicles)
-				{
-					Unit->SetSelectedDecal();
-					Unit->bIsSelected = true;
-				}
-			}
-		}
 	}
 }
 
@@ -80,23 +39,9 @@ void ARTS_MarqueeSelection::OnInputStart()
 {
 	if (SelectedUnits.Num() >= 1 || SelectedVehicles.Num() >= 1)
 	{
-		for (auto Unit : SelectedUnits)
-		{
-			Unit->SetDeselectedDecal();
-			Unit->bIsSelected = false;
-			ControllerRef->bIsUnitSelected = false;
-		}
-
-		SelectedUnits.Empty();
-
-		for (auto Unit : SelectedVehicles)
-		{
-			Unit->SetDeselectedDecal();
-			Unit->bIsSelected = false;
-			ControllerRef->bIsUnitSelected = false;
-		}
-
-		SelectedVehicles.Empty();
+		ClearSelectedUnits();
+		ClearVehicles();
+		ControllerRef->SetSelectedUnits(SelectedUnits, SelectedVehicles);
 	}
 
 	ControllerRef->GetMousePosition(ClickedLocation.X, ClickedLocation.Y);
@@ -107,7 +52,9 @@ void ARTS_MarqueeSelection::OnInputStart()
 void ARTS_MarqueeSelection::OnInputRelease(float HoldTime)
 {
 	bIsDrawing = false;
-	ControllerRef->SetSelectedUnits(SelectedUnits, SelectedVehicles);	
+	SetUnits();
+	SetVehicles();
+	ControllerRef->SetSelectedUnits(SelectedUnits, SelectedVehicles);
 }
 
 void ARTS_MarqueeSelection::OnInputHold()
@@ -128,4 +75,69 @@ void ARTS_MarqueeSelection::DrawMarquee()
 	ScreenLocal = HoldingLocation - ClickedLocation;
 
 	DrawRect(MarqueecolorLocal, ClickedLocation.X, ClickedLocation.Y, ScreenLocal.X, ScreenLocal.Y);
+}
+
+void ARTS_MarqueeSelection::ClearSelectedUnits()
+{
+	for (auto Unit : SelectedUnits)
+	{
+		Unit->SetDeselectedDecal();
+		Unit->bIsSelected = false;
+		ControllerRef->bIsUnitSelected = false;
+	}
+
+	SelectedUnits.Empty();
+}
+
+void ARTS_MarqueeSelection::ClearVehicles()
+{
+	for (auto Unit : SelectedVehicles)
+	{
+		Unit->SetDeselectedDecal();
+		Unit->bIsSelected = false;
+		ControllerRef->bIsUnitSelected = false;
+	}
+
+	SelectedVehicles.Empty();
+}
+
+void ARTS_MarqueeSelection::SetUnits()
+{
+	for (auto UnitElement : UnitsInSelectionArea)
+	{
+		if (UnitElement->GetClass()->IsChildOf<ARTS_Cpp_TutorialCharacter>())
+		{
+			SelectedUnit = Cast<ARTS_Cpp_TutorialCharacter>(UnitElement);
+
+			SelectedUnits.AddUnique(SelectedUnit);
+
+			for (auto Unit : SelectedUnits)
+			{
+				Unit->SetSelectedDecal();
+				Unit->bIsSelected = true;
+			}
+		}
+	}
+}
+
+void ARTS_MarqueeSelection::SetVehicles()
+{
+	for (auto UnitElement : VehicleUnitsInSelectedArea)
+	{
+		if (UnitElement->GetClass()->IsChildOf<ATP_VehiclePawn>())
+		{
+			/*UE_LOG(LogTemp, Warning, TEXT("ARTS_MarqueeSelection::DrawHUD() | VehicleUnitsInSelectedArea.Num(): %d"),
+				VehicleUnitsInSelectedArea.Num());*/
+
+			SelectedVehicle = Cast<ATP_VehiclePawn>(UnitElement);
+
+			SelectedVehicles.AddUnique(SelectedVehicle);
+
+			for (auto Unit : SelectedVehicles)
+			{
+				Unit->SetSelectedDecal();
+				Unit->bIsSelected = true;
+			}
+		}
+	}
 }

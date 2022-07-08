@@ -11,6 +11,7 @@
 
 class ARTS_PlayerController;
 class ARTS_GameState;
+class ATP_VehiclePawn;
 
 UCLASS(Blueprintable)
 class ARTS_Cpp_TutorialCharacter : public ACharacter
@@ -56,6 +57,8 @@ public:
 
 	UPROPERTY()
 	UMaterialInstanceDynamic* DynMaterial;
+
+	ATP_VehiclePawn* PassengerIn;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Unit|Configs")
 	UMaterialInterface* MaterialToEdit;
@@ -123,5 +126,7 @@ public:
 	void SetSelectedDecal();
 
 	void SetDeselectedDecal();
+
+	void ExitVehicle();
 };
 

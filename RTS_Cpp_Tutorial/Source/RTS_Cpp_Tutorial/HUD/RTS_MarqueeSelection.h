@@ -59,4 +59,12 @@ public:
 	void OnInputHold();
 
 	void DrawMarquee();
+
+	void ClearSelectedUnits();
+
+	void ClearVehicles();
+
+	void SetUnits();
+
+	void SetVehicles();
 };

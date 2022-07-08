@@ -312,3 +312,15 @@ void ARTS_Cpp_TutorialCharacter::SetDeselectedDecal()
 	DeselectedDecal->SetVisibility(true);
 	DeselectedDecal->SetHiddenInGame(false);
 }
+
+void ARTS_Cpp_TutorialCharacter::ExitVehicle()
+{
+	FVector GoalLocal;
+	float DestLocationX = FMath::RandRange(100.0f, 400.0f);
+	float DestLocationY = FMath::RandRange(100.0f, 400.0f);
+	FVector DestLocation = FVector(DestLocationX, DestLocationY, 100.0f);
+
+	GoalLocal = GetActorLocation() + DestLocation;
+
+	UnitAIController->MoveToLocation(GoalLocal);
+}

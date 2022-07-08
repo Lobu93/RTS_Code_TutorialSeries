@@ -12,6 +12,7 @@
 #include "GameFramework/Controller.h"
 #include "Components/DecalComponent.h"
 #include "../Player/RTS_PlayerController.h"
+#include "../RTS_Cpp_TutorialCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -176,6 +177,11 @@ void ATP_VehiclePawn::UpdateMovement()
 			Vehicle4W->SetBrakeInput(0.0f);
 			GetWorldTimerManager().ClearTimer(TimerHandleGlobal);
 			ControllerRef->RemoveLocationDecals();
+
+			if (bHasPassengers)
+			{
+				RemovePassengers();
+			}
 		}
 	}
 }
@@ -183,6 +189,48 @@ void ATP_VehiclePawn::UpdateMovement()
 void ATP_VehiclePawn::ReceiveMoveCommand(FVector TargetLocation)
 {
 	MoveToLocation(TargetLocation);
+}
+
+void ATP_VehiclePawn::GetPassengers(TArray<ARTS_Cpp_TutorialCharacter*> Passengers)
+{
+	PassengersTemp = Passengers;
+
+	for (auto Unit : PassengersTemp)
+	{
+		if (Unit->PassengerIn == this)
+		{
+			CurrentPassengers.AddUnique(Unit);
+		}
+	}
+}
+
+void ATP_VehiclePawn::RemovePassengers()
+{
+	ARTS_Cpp_TutorialCharacter* UnitPassengerLocal;
+	FVector UnitLocationLocal;
+	FVector DestLocationLocal;
+	float RandomFloatLocal;
+
+	for (auto Unit : CurrentPassengers)
+	{
+		UnitPassengerLocal = Unit;
+		UnitPassengerLocal->SetActorHiddenInGame(false);
+		
+		UnitLocationLocal = GetActorLocation();
+		RandomFloatLocal = FMath::RandRange(200.0f, 500.0f);
+		
+		DestLocationLocal.X = UnitLocationLocal.X + RandomFloatLocal;
+		DestLocationLocal.Y = UnitLocationLocal.Y + RandomFloatLocal;
+		DestLocationLocal.Z = UnitLocationLocal.Z + 150.0f;
+
+		UnitPassengerLocal->TeleportTo(DestLocationLocal, FRotator(0.0f, 0.0f, 0.0f));
+
+		UnitPassengerLocal->ExitVehicle();
+	}
+
+	CurrentPassengers.Empty();
+
+	bHasPassengers = false;
 }
 
 

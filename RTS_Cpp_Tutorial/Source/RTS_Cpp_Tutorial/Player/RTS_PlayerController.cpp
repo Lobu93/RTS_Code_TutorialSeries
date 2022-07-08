@@ -281,20 +281,10 @@ FVector ARTS_PlayerController::EdgeScroll()
 	if (Proportion_Y_Local >= 0.975f)
 	{
 		EdgeScrollSpeedY = -10.0f;
-
-		/*FString MessageString = FString("Move Down. Because of Mouse Y value is ");
-
-		MessageString.AppendInt(MousePositionLocal.Y);
-		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Blue, MessageString);*/
 	}
 	else if (Proportion_Y_Local <= 0.025f)
 	{
 		EdgeScrollSpeedY = 10.0f;
-
-		/*FString MessageString = FString("Move Up. Because of Mouse Y value is ");
-
-		MessageString.AppendInt(MousePositionLocal.Y);
-		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Red, MessageString); */
 	}
 	else
 	{
@@ -322,10 +312,11 @@ void ARTS_PlayerController::SecondaryAction()
 
 		GetHitResultUnderCursorByChannel(TraceTypeLocal, false, HitResultLocal);
 
-		OtherActor = Cast<AActor>(HitResultLocal.GetActor());
 		TargetLocation = HitResultLocal.Location;
+		HitActor = Cast<AActor>(HitResultLocal.GetActor());
 
 		UnitMovement();
+
 		VehicleMovement();
 	}
 	else
@@ -410,25 +401,41 @@ void ARTS_PlayerController::UnitMovement()
 {
 	FVector DecalSize(32.0f, 64.0f, 64.0f);
 	FRotator DecalRotation(-90.0f, 0.0f, 0.0f);
-	AAIController* AIControllerLocal;
+	bool ClassNotEqualLocal;
 
 	if (SelectedUnits.Num() >= 1)
 	{
 		for (auto Unit : SelectedUnits)
 		{
-			AIControllerLocal = Cast<AAIController>(Unit->GetController());
+			UnitAI = Cast<AAIController>(Unit->GetController());
 
-			if (AIControllerLocal != nullptr)
+			if (UnitAI != nullptr)
 			{
 				if (IsValid(PreviousLocationDecal))
 				{
 					PreviousLocationDecal->DestroyComponent();
-					AIControllerLocal->StopMovement();
+					UnitAI->StopMovement();
 				}
 
-				PreviousLocationDecal = UGameplayStatics::SpawnDecalAtLocation(OtherActor, DecalMaterial, DecalSize, TargetLocation, DecalRotation);
+				UClass* HitClass = HitActor->GetClass()->GetSuperClass();
+				ClassNotEqualLocal = UKismetMathLibrary::NotEqual_ClassClass(HitClass, ATP_VehiclePawn::StaticClass());
 
-				AIControllerLocal->MoveToLocation(TargetLocation, -1.0f, false);
+				if (ClassNotEqualLocal)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("AARTS_PlayerController::UnitMovement() | HitActor: %s StaticClass(): %s"), 
+						*HitActor->GetClass()->GetName(), *ATP_VehiclePawn::StaticClass()->GetName());
+
+					PreviousLocationDecal = UGameplayStatics::SpawnDecalAtLocation(HitActor, DecalMaterial, DecalSize, TargetLocation, DecalRotation);
+				}
+				else
+				{					
+					TargetVehicle = Cast<ATP_VehiclePawn>(HitActor);
+
+					UE_LOG(LogTemp, Error, TEXT("AARTS_PlayerController::UnitMovement() | ClassNotEqual: %s"),
+						*TargetVehicle->GetName());
+				}
+				
+				UnitAI->MoveToLocation(TargetLocation, 150.0f, false);
 			}
 		}
 	}
@@ -450,7 +457,7 @@ void ARTS_PlayerController::VehicleMovement()
 
 			FVector DebugLocation = Unit->ActorToMove->GetActorLocation();
 
-			PreviousLocationDecal = UGameplayStatics::SpawnDecalAtLocation(OtherActor, DecalMaterial, DecalSize, TargetLocation, DecalRotation);
+			PreviousLocationDecal = UGameplayStatics::SpawnDecalAtLocation(HitActor, DecalMaterial, DecalSize, TargetLocation, DecalRotation);
 
 			Unit->ReceiveMoveCommand(TargetLocation);
 		}
@@ -459,17 +466,18 @@ void ARTS_PlayerController::VehicleMovement()
 
 void ARTS_PlayerController::AIMoveCompleted()
 {
-	if (IsValid(PreviousLocationDecal))
+	bool ClassNotEqualLocal;
+
+	UClass* HitClass = HitActor->GetClass()->GetSuperClass();
+	ClassNotEqualLocal = UKismetMathLibrary::NotEqual_ClassClass(HitClass, ATP_VehiclePawn::StaticClass());
+
+	if (ClassNotEqualLocal)
 	{
-		AAIController* AIControllerLocal;
-
-		for (auto Unit : SelectedUnits)
-		{
-			AIControllerLocal = Cast<AAIController>(Unit->GetController());
-			AIControllerLocal->StopMovement();
-		}
-
-		PreviousLocationDecal->DestroyComponent();
+		RemoveLocationDecals();
+	}
+	else
+	{
+		GetInVehicle();
 	}
 }
 
@@ -479,6 +487,47 @@ void ARTS_PlayerController::RemoveLocationDecals()
 	{
 		PreviousLocationDecal->DestroyComponent();
 	}
+}
+
+void ARTS_PlayerController::GetInVehicle()
+{
+	for (auto Unit : SelectedUnits)
+	{
+		SelectedUnit = Unit;
+
+		if (PassengerSent < TargetVehicle->MaxPassengers)
+		{
+			SelectedUnit->SetActorHiddenInGame(true);
+
+			float DestLocationX = FMath::RandRange(0.0f, 600.0f);
+			float DestLocationY = FMath::RandRange(0.0f, 600.0f);
+			FVector DestLocation = FVector(DestLocationX, DestLocationY, -250.0f);
+			SelectedUnit->TeleportTo(DestLocation, FRotator(0.0f, 0.0f, 0.0f));
+
+			SelectedUnit->SetDeselectedDecal();
+
+			SelectedUnit->bIsSelected = false;
+
+			int32 IndexOfArray = SetPassengers.AddUnique(SelectedUnit);
+			PassengerSent = IndexOfArray + 1;
+
+			SelectedUnit->PassengerIn = TargetVehicle;
+
+			TargetVehicle->bHasPassengers = true;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	MarqueeRef->ClearSelectedUnits();
+
+	TargetVehicle->GetPassengers(SetPassengers);
+
+	SelectedUnits.Empty();
+
+	PassengerSent = 0;
 }
 
 void ARTS_PlayerController::SetSelectedUnits(TArray<ARTS_Cpp_TutorialCharacter*> InSelectedUnits, TArray<ATP_VehiclePawn*> SelectedVehicles)

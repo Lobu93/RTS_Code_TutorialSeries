@@ -8,6 +8,7 @@
 
 class UWheeledVehicleMovementComponent4W;
 class ARTS_PlayerController;
+class ARTS_Cpp_TutorialCharacter;
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 
@@ -47,9 +48,13 @@ public:
 	ARTS_PlayerController* ControllerRef;
 	FTimerHandle TimerHandleGlobal;
 	bool bIsSelected;
+	bool bHasPassengers;
 	FVector Target;
 	float InitialDistance;
 	float StartingTime;
+	int32 MaxPassengers = 4;
+	TArray<ARTS_Cpp_TutorialCharacter*> PassengersTemp;
+	TArray<ARTS_Cpp_TutorialCharacter*> CurrentPassengers;
 
 	void SetSelectedDecal();
 
@@ -61,6 +66,10 @@ public:
 	void UpdateMovement();
 
 	void ReceiveMoveCommand(FVector TargetLocation);
+
+	void GetPassengers(TArray<ARTS_Cpp_TutorialCharacter*> Passengers);
+
+	void RemovePassengers();
 
 	// For debug purpose only
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")

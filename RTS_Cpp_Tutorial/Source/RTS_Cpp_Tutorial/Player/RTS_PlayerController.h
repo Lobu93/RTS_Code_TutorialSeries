@@ -15,6 +15,7 @@ class ARTS_Cpp_TutorialCharacter;
 class ATP_VehiclePawn;
 class ARTS_MarqueeSelection;
 class UDecalComponent;
+class AAIController;
 
 /**
  * 
@@ -101,6 +102,8 @@ public:
 
 	ARTS_MarqueeSelection* MarqueeRef;
 
+	AAIController* UnitAI;
+
 	// DisplayUnit HUD Event Dispatcher
 	UPROPERTY(BlueprintAssignable, Category = "Event Dispatcher")
 	FDisplayUnitHUD DisplayUnitHUD_Delegate;
@@ -108,8 +111,13 @@ public:
 	const TArray<TEnumAsByte<EObjectTypeQuery>> SelectableObjectsEnum;
 
 	TArray<ARTS_Cpp_TutorialCharacter*> SelectedUnits;
+	TArray<ARTS_Cpp_TutorialCharacter*> SetPassengers;
 	TArray<ATP_VehiclePawn*> SelectedGroundVehicles;
-	AActor* OtherActor;
+	AActor* HitActor;
+
+	ARTS_Cpp_TutorialCharacter* SelectedUnit;
+	ATP_VehiclePawn* SelectedGroundVehicle;
+	ATP_VehiclePawn* TargetVehicle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
 	TSubclassOf<ARTS_Cpp_TutorialCharacter> UnitForDebug;
@@ -126,6 +134,8 @@ public:
 	// Modify default movement speed
 	float MovementSpeedModifier = 1.0f;
 
+	float HoldingTime;
+
 	// When mouse is pressed, the camera don't can move
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool bDisableCamMovement;
@@ -135,6 +145,8 @@ public:
 	bool bIsBuildingModeActive;
 
 	bool bIsHoldingInput;
+
+	bool bHasPassengers;
 
 	FVector2D MouseLastValidPosition;
 
@@ -147,7 +159,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Resources")
 	int32 MaxResourceLimit;
 
-	float HoldingTime;
+	int32 PassengerSent;
 
 	FVector TargetLocation;
 
@@ -165,6 +177,8 @@ public:
 	void AIMoveCompleted();
 
 	void RemoveLocationDecals();
+
+	void GetInVehicle();
 
 	void SpawnUnitDebug();
 
