@@ -90,3 +90,11 @@ enum class ESurnames : uint8
 	Davis,
 	Wilson
 };
+
+UENUM(BlueprintType)
+enum class EVehicleTypes : uint8
+{	
+	Civilian,
+	Transport,
+	Tank
+};

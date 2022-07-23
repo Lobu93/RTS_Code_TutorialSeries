@@ -122,6 +122,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
 	TSubclassOf<ARTS_Cpp_TutorialCharacter> UnitForDebug;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
+	TSubclassOf<ATP_VehiclePawn> VehicleForDebug;
+
 	// How fast the camera moves when zooming
 	float ZoomSpeed = 150.0f;
 
@@ -181,5 +184,7 @@ public:
 	void GetInVehicle();
 
 	void SpawnUnitDebug();
+
+	void SpawnVehicleDebug();
 
 };

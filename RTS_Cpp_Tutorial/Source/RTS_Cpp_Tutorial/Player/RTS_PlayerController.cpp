@@ -74,9 +74,13 @@ void ARTS_PlayerController::SetupInputComponent()
 	InputComponent->BindAction("PrimaryAction", IE_Pressed, this, &ARTS_PlayerController::PrimaryAction_Pressed);
 	InputComponent->BindAction("PrimaryAction", IE_Released, this, &ARTS_PlayerController::PrimaryAction_Released);
 
-	FInputActionKeyMapping SpawnMapping("SpawnName", EKeys::V, 0, 0, 0, 0);
-	this->PlayerInput->AddActionMapping(SpawnMapping);
-	InputComponent->BindAction("SpawnName", IE_Pressed, this, &ARTS_PlayerController::SpawnUnitDebug);
+	FInputActionKeyMapping SpawnUnitMapping("SpawnUnitAction", EKeys::V, 0, 0, 0, 0);
+	this->PlayerInput->AddActionMapping(SpawnUnitMapping);
+	InputComponent->BindAction("SpawnUnitAction", IE_Pressed, this, &ARTS_PlayerController::SpawnUnitDebug);
+
+	FInputActionKeyMapping SpawnVehicleMapping("SpawnVehicleAction", EKeys::B, 0, 0, 0, 0);
+	this->PlayerInput->AddActionMapping(SpawnVehicleMapping);
+	InputComponent->BindAction("SpawnVehicleAction", IE_Pressed, this, &ARTS_PlayerController::SpawnVehicleDebug);
 }
 
 void ARTS_PlayerController::Move_CameraPawn_X(float AxisValue)
@@ -392,7 +396,7 @@ void ARTS_PlayerController::GetUnitHUD()
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::SecondaryAction() | HitResultLocal.Actor: nullptr"));
+			UE_LOG(LogTemp, Error, TEXT("ARTS_PlayerController::GetUnitHUD() | HitResultLocal.Actor: nullptr"));
 		}
 	}
 }
@@ -455,7 +459,7 @@ void ARTS_PlayerController::VehicleMovement()
 				PreviousLocationDecal->DestroyComponent();
 			}
 
-			FVector DebugLocation = Unit->ActorToMove->GetActorLocation();
+			// FVector DebugLocation = Unit->ActorToMove->GetActorLocation();
 
 			PreviousLocationDecal = UGameplayStatics::SpawnDecalAtLocation(HitActor, DecalMaterial, DecalSize, TargetLocation, DecalRotation);
 
@@ -527,6 +531,8 @@ void ARTS_PlayerController::GetInVehicle()
 
 	SelectedUnits.Empty();
 
+	SetPassengers.Empty();
+
 	PassengerSent = 0;
 }
 
@@ -555,4 +561,17 @@ void ARTS_PlayerController::SpawnUnitDebug()
 	// GameStateRef->GetAllUnits();
 
 	GetWorld()->SpawnActor<ARTS_Cpp_TutorialCharacter>(UnitForDebug, UnitLocationLocal, UnitRotationLocal, SpawnInfo);
+}
+
+void ARTS_PlayerController::SpawnVehicleDebug()
+{
+	FHitResult HitResult;
+	FActorSpawnParameters SpawnInfo;
+	FVector UnitLocationLocal;
+	FRotator UnitRotationLocal = FRotator(0, 0, 0);
+
+	UnitLocationLocal = URTS_FuncLib::SetCursorWorldPosition(this, 10000.0f);
+	UnitLocationLocal.Z = 150.0f;
+
+	GetWorld()->SpawnActor<ATP_VehiclePawn>(VehicleForDebug, UnitLocationLocal, UnitRotationLocal, SpawnInfo);
 }

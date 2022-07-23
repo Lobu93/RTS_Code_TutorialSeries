@@ -55,10 +55,6 @@ ARTS_Cpp_TutorialCharacter::ARTS_Cpp_TutorialCharacter(const class FObjectInitia
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
-	/*if (bIsSpawnedIn)
-	{
-		SetUnitFeatures();
-	}*/
 }
 
 // Called when the game starts or when spawned
@@ -76,11 +72,6 @@ void ARTS_Cpp_TutorialCharacter::BeginPlay()
 	ReferenceCast();
 
 	ControllerRef->DisplayUnitHUD_Delegate.AddDynamic(this, &ARTS_Cpp_TutorialCharacter::DisplayUnitHUD);
-
-	/*if (!bIsSpawnedIn)
-	{
-		SetUnitFeatures();
-	}*/
 
 	SetUnitBirthday();
 

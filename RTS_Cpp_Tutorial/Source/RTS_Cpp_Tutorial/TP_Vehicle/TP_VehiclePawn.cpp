@@ -15,6 +15,7 @@
 #include "../RTS_Cpp_TutorialCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "../Library/EnumList.h"
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 
@@ -78,6 +79,8 @@ void ATP_VehiclePawn::BeginPlay()
 	Super::BeginPlay();
 
 	ControllerRef = Cast<ARTS_PlayerController>(GetWorld()->GetFirstPlayerController());
+
+	ControllerRef->DisplayUnitHUD_Delegate.AddDynamic(this, &ATP_VehiclePawn::DisplayVehicleHUD);
 }
 
 void ATP_VehiclePawn::SetSelectedDecal()
@@ -103,6 +106,8 @@ void ATP_VehiclePawn::MoveToLocation(FVector TargetLocation)
 	InitialDistance = UKismetMathLibrary::VSize(GetActorLocation() - Target);
 
 	StartingTime = UKismetSystemLibrary::GetGameTimeInSeconds(GetWorld());
+
+	bIsMoving = true;	
 
 	Vehicle4W->SetHandbrakeInput(false);
 
@@ -178,10 +183,7 @@ void ATP_VehiclePawn::UpdateMovement()
 			GetWorldTimerManager().ClearTimer(TimerHandleGlobal);
 			ControllerRef->RemoveLocationDecals();
 
-			if (bHasPassengers)
-			{
-				RemovePassengers();
-			}
+			bIsMoving = false;
 		}
 	}
 }
@@ -202,6 +204,8 @@ void ATP_VehiclePawn::GetPassengers(TArray<ARTS_Cpp_TutorialCharacter*> Passenge
 			CurrentPassengers.AddUnique(Unit);
 		}
 	}
+
+	PassengersTemp.Empty();
 }
 
 void ATP_VehiclePawn::RemovePassengers()
@@ -209,28 +213,45 @@ void ATP_VehiclePawn::RemovePassengers()
 	ARTS_Cpp_TutorialCharacter* UnitPassengerLocal;
 	FVector UnitLocationLocal;
 	FVector DestLocationLocal;
-	float RandomFloatLocal;
+	float FirstRandomFloatLocal;
+	float SecondRandomFloatLocal;
 
-	for (auto Unit : CurrentPassengers)
+	if (bHasPassengers && !bIsMoving)
 	{
-		UnitPassengerLocal = Unit;
-		UnitPassengerLocal->SetActorHiddenInGame(false);
-		
-		UnitLocationLocal = GetActorLocation();
-		RandomFloatLocal = FMath::RandRange(200.0f, 500.0f);
-		
-		DestLocationLocal.X = UnitLocationLocal.X + RandomFloatLocal;
-		DestLocationLocal.Y = UnitLocationLocal.Y + RandomFloatLocal;
-		DestLocationLocal.Z = UnitLocationLocal.Z + 150.0f;
+		for (auto Unit : CurrentPassengers)
+		{
+			UnitPassengerLocal = Unit;
+			UnitPassengerLocal->SetActorHiddenInGame(false);
 
-		UnitPassengerLocal->TeleportTo(DestLocationLocal, FRotator(0.0f, 0.0f, 0.0f));
+			UnitLocationLocal = GetActorLocation();
+			FirstRandomFloatLocal = FMath::RandRange(150.0f, 700.0f);
+			SecondRandomFloatLocal = FMath::RandRange(150.0f, 700.0f);
 
-		UnitPassengerLocal->ExitVehicle();
+			DestLocationLocal.X = UnitLocationLocal.X + FirstRandomFloatLocal;
+			DestLocationLocal.Y = UnitLocationLocal.Y + SecondRandomFloatLocal;
+			DestLocationLocal.Z = UnitLocationLocal.Z + 150.0f;
+
+			UnitPassengerLocal->TeleportTo(DestLocationLocal, FRotator(0.0f, 0.0f, 0.0f));
+
+			UnitPassengerLocal->ExitVehicle();
+		}
+
+		CurrentPassengers.Empty();
+
+		bHasPassengers = false;
 	}
+}
 
-	CurrentPassengers.Empty();
-
-	bHasPassengers = false;
+void ATP_VehiclePawn::DisplayVehicleHUD_Implementation(AActor* Actor, bool bBypass)
+{
+	if (UKismetMathLibrary::EqualEqual_ObjectObject(Actor, this) && (bBypass || !bIsHidden))
+	{
+		bCanDisplayVehicleHUD = true;
+	}
+	else
+	{
+		bCanDisplayVehicleHUD = false;
+	}
 }
 
 
