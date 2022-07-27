@@ -16,6 +16,7 @@ class ATP_VehiclePawn;
 class ARTS_MarqueeSelection;
 class UDecalComponent;
 class AAIController;
+class ARTS_PreviewBuilding;
 
 /**
  * 
@@ -95,7 +96,7 @@ private:
 
 public:
 	// This is a reference to our camera Pawn
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
 	ARTS_CameraPawn* CameraPawnRef;
 
 	ARTS_GameState* GameStateRef;
@@ -103,6 +104,9 @@ public:
 	ARTS_MarqueeSelection* MarqueeRef;
 
 	AAIController* UnitAI;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
+	ARTS_PreviewBuilding* ConstructionPreviewRef;
 
 	// DisplayUnit HUD Event Dispatcher
 	UPROPERTY(BlueprintAssignable, Category = "Event Dispatcher")
@@ -118,6 +122,9 @@ public:
 	ARTS_Cpp_TutorialCharacter* SelectedUnit;
 	ATP_VehiclePawn* SelectedGroundVehicle;
 	ATP_VehiclePawn* TargetVehicle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building")
+	TSubclassOf<ARTS_PreviewBuilding> PreviewBuild;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
 	TSubclassOf<ARTS_Cpp_TutorialCharacter> UnitForDebug;
@@ -165,6 +172,8 @@ public:
 	int32 PassengerSent;
 
 	FVector TargetLocation;
+
+	FTransform EmptyTransform = FTransform();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
 	UMaterial* DecalMaterial;

@@ -16,6 +16,7 @@
 #include "../HUD/RTS_MarqueeSelection.h"
 #include "GameFramework/PlayerInput.h"
 #include "Components/DecalComponent.h"
+#include "../Buildings/RTS_PreviewBuilding.h"
 
 
 // Called when the game starts or when spawned
@@ -25,6 +26,16 @@ void ARTS_PlayerController::BeginPlay()
 
 	ReferenceCasts();
 
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnInfo.bNoFail = true;
+	ConstructionPreviewRef = GetWorld()->SpawnActor<ARTS_PreviewBuilding>(PreviewBuild, EmptyTransform, SpawnInfo);
+
+	if (ConstructionPreviewRef)
+	{
+		ConstructionPreviewRef->PlayerControllerRef = this;
+	}
+
 	bShowMouseCursor = true;
 
 	bEnableClickEvents = true;
@@ -32,6 +43,10 @@ void ARTS_PlayerController::BeginPlay()
 	bEnableMouseOverEvents = true;
 
 	DefaultMouseCursor = EMouseCursor::Hand;
+
+	FInputModeGameAndUI InputModeLocal;
+	InputModeLocal.SetHideCursorDuringCapture(false);
+	SetInputMode(FInputModeGameAndUI(InputModeLocal));
 
 	MovementCompleteDelegate.BindUFunction(this, "AIMoveCompleted");
 }
@@ -307,25 +322,32 @@ FVector ARTS_PlayerController::EdgeScroll()
 
 void ARTS_PlayerController::SecondaryAction()
 {
-	if (bIsUnitSelected)
+	if (bIsBuildingModeActive)
 	{
-		FHitResult HitResultLocal;
-		ETraceTypeQuery TraceTypeLocal;
-
-		TraceTypeLocal = UEngineTypes::ConvertToTraceType(ECC_Visibility);
-
-		GetHitResultUnderCursorByChannel(TraceTypeLocal, false, HitResultLocal);
-
-		TargetLocation = HitResultLocal.Location;
-		HitActor = Cast<AActor>(HitResultLocal.GetActor());
-
-		UnitMovement();
-
-		VehicleMovement();
+		ConstructionPreviewRef->DestroyPreview();
 	}
 	else
 	{
-		GetUnitHUD();
+		if (bIsUnitSelected)
+		{
+			FHitResult HitResultLocal;
+			ETraceTypeQuery TraceTypeLocal;
+
+			TraceTypeLocal = UEngineTypes::ConvertToTraceType(ECC_Visibility);
+
+			GetHitResultUnderCursorByChannel(TraceTypeLocal, false, HitResultLocal);
+
+			TargetLocation = HitResultLocal.Location;
+			HitActor = Cast<AActor>(HitResultLocal.GetActor());
+
+			UnitMovement();
+
+			VehicleMovement();
+		}
+		else
+		{
+			GetUnitHUD();
+		}
 	}
 }
 
