@@ -24,5 +24,5 @@ class RTS_CPP_TUTORIAL_API IRTS_Construction_IF
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interface")
-	void ConstructBuilding(TSubclassOf<ARTS_BuildingMaster> BuildingMasterClass);
+	bool ConstructBuilding(TSubclassOf<ARTS_BuildingMaster> BuildingMasterClass);
 };

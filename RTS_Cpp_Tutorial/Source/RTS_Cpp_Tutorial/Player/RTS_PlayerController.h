@@ -30,6 +30,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "References")	
+	void SpawnWidgets();
+	void SpawnWidgets_Implementation();
+
 	// Called every frame
 	virtual void Tick(float InDeltaTime) override;
 
@@ -195,5 +199,7 @@ public:
 	void SpawnUnitDebug();
 
 	void SpawnVehicleDebug();
+
+	void SetBuildingModeActive(bool bIsActive);
 
 };

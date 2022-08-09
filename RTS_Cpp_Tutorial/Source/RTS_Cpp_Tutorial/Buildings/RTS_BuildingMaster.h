@@ -8,6 +8,7 @@
 
 class UStaticMeshComponent;
 class UStaticMesh;
+class ARTS_PlayerController;
 
 UCLASS(Blueprintable)
 class RTS_CPP_TUTORIAL_API ARTS_BuildingMaster : public AActor
@@ -29,7 +30,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class UBillboardComponent* BillboardComp;
 
-	// UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "References")
+	ARTS_PlayerController* PlayerControllerRef;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	class UStaticMeshComponent* BuildingMesh;

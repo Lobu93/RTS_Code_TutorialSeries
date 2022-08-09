@@ -34,6 +34,11 @@ void ARTS_PlayerController::BeginPlay()
 	if (ConstructionPreviewRef)
 	{
 		ConstructionPreviewRef->PlayerControllerRef = this;
+
+		SpawnWidgets();
+
+		/*UE_LOG(LogTemp, Warning, TEXT("ARTS_PlayerController::BeginPlay() | ConstructionPreviewRef Name: %s"),
+			*ConstructionPreviewRef->GetName());*/
 	}
 
 	bShowMouseCursor = true;
@@ -51,6 +56,10 @@ void ARTS_PlayerController::BeginPlay()
 	MovementCompleteDelegate.BindUFunction(this, "AIMoveCompleted");
 }
 
+void ARTS_PlayerController::SpawnWidgets_Implementation()
+{
+}
+
 void ARTS_PlayerController::Tick(float InDeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -60,6 +69,15 @@ void ARTS_PlayerController::Tick(float InDeltaTime)
 	if (bIsHoldingInput)
 	{
 		UpdateSelection();
+	}
+	else
+	{
+		if (bIsBuildingModeActive && ConstructionPreviewRef != nullptr)
+		{
+			FVector CursorLocationLocal = URTS_FuncLib::SetCursorWorldPosition(this, 10000.0f);
+
+			ConstructionPreviewRef->GetCursorPosition(CursorLocationLocal);
+		}
 	}
 }
 
@@ -596,4 +614,9 @@ void ARTS_PlayerController::SpawnVehicleDebug()
 	UnitLocationLocal.Z = 150.0f;
 
 	GetWorld()->SpawnActor<ATP_VehiclePawn>(VehicleForDebug, UnitLocationLocal, UnitRotationLocal, SpawnInfo);
+}
+
+void ARTS_PlayerController::SetBuildingModeActive(bool bIsActive)
+{
+	bIsBuildingModeActive = bIsActive;
 }

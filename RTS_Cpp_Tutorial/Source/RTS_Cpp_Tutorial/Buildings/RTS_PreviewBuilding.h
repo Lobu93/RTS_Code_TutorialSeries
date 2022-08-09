@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "../Library/RTS_Construction_IF.h"
+#include "../Library/Structures.h"
 #include "RTS_PreviewBuilding.generated.h"
 
 class UStaticMeshComponent;
+class UStaticMesh;
 class ARTS_PlayerController;
 
 UCLASS()
@@ -33,5 +35,29 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	class UStaticMeshComponent* PreviewBuildingMesh;
 
+	UPROPERTY(EditAnywhere)
+	FGate Gate;
+
+	class UStaticMesh* DisplayMesh;
+
+	TSubclassOf<ARTS_BuildingMaster> BuildingClass;
+
+	FTransform EmptyTransform = FTransform();
+	FVector CursorWorldPosition;
+	int32 SnapValue = 100;
+
+	bool bIsPreviewing;
+
 	void DestroyPreview();
+
+	void SpawnPreview(TSubclassOf<ARTS_BuildingMaster> InBuildingClass, UStaticMesh* InDisplayMesh);
+
+	// Interface Event
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Calendar")
+	bool ConstructBuilding(TSubclassOf<ARTS_BuildingMaster> BuildingMasterClass);
+	virtual bool ConstructBuilding_Implementation(TSubclassOf<ARTS_BuildingMaster> BuildingMasterClass);
+
+	void GetCursorPosition(FVector CursorLocationIn);
+
+	FVector GridSnaps();
 };
