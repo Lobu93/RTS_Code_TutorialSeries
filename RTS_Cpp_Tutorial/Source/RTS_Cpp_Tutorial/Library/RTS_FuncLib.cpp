@@ -36,11 +36,12 @@ FVector URTS_FuncLib::SetCursorWorldPosition(APlayerController* Controller, floa
 		FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
 		FVector StartLocation;
 		FVector EndLocation;
+		ECollisionChannel ECC_LandscapeLocal = ECollisionChannel::ECC_GameTraceChannel1;
 
 		Controller->DeprojectMousePositionToWorld(StartLocation, EndLocation);
 		EndLocation = StartLocation + (EndLocation * SightDistance);
 
-		World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
+		World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_LandscapeLocal, Params);
 
 		if (HitResult.Actor != nullptr)
 		{

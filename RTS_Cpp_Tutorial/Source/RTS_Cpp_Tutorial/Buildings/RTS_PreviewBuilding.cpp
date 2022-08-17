@@ -14,6 +14,19 @@ ARTS_PreviewBuilding::ARTS_PreviewBuilding()
 	PreviewBuildingMesh->SetupAttachment(RootComponent);
 	PreviewBuildingMesh->bEditableWhenInherited = true;
 	PreviewBuildingMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
+	/*Preview_Material_Instance = ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant>
+		(TEXT("MaterialInstanceConstant'/Game/RTS_Tutorial/Materials/Construction/Preview_M_Inst.Preview_M_Inst'"));*/
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant>
+		Preview_M_Local(TEXT("MaterialInstanceConstant'/Game/RTS_Tutorial/Materials/Construction/Preview_M_Inst.Preview_M_Inst'"));
+
+	Preview_Material_Instance = Preview_M_Local.Object;
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant>
+		PreviewBad_M_Local(TEXT("MaterialInstanceConstant'/Game/RTS_Tutorial/Materials/Construction/PreviewBad_M_Inst.PreviewBad_M_Inst'"));
+
+	PreviewBad_Material_Instance = PreviewBad_M_Local.Object;
 }
 
 // Called when the game starts or when spawned
@@ -31,6 +44,15 @@ void ARTS_PreviewBuilding::Tick(float DeltaTime)
 	if (Gate.IsOpen())
 	{
 		SetActorLocation(GridSnaps());
+
+		if (CheckOverlap())
+		{
+			PreviewBuildingMesh->SetMaterial(0, PreviewBad_Material_Instance);
+		}
+		else
+		{
+			PreviewBuildingMesh->SetMaterial(0, Preview_Material_Instance);
+		}
 	}
 }
 
@@ -45,6 +67,8 @@ void ARTS_PreviewBuilding::DestroyPreview()
 	PlayerControllerRef->SetBuildingModeActive(bIsPreviewing);
 
 	PreviewBuildingMesh->SetStaticMesh(DisplayMesh);
+
+	SetActorRotation(FRotator());
 }
 
 void ARTS_PreviewBuilding::SpawnPreview(TSubclassOf<ARTS_BuildingMaster> InBuildingClass, UStaticMesh* InDisplayMesh)
@@ -114,4 +138,14 @@ FVector ARTS_PreviewBuilding::GridSnaps()
 	SnapPosiitonLocal = FVector(Snap_X_Local, Snap_Y_Local, CursorWorldPosition.Z);
 
 	return SnapPosiitonLocal;
+}
+
+bool ARTS_PreviewBuilding::CheckOverlap()
+{
+	//bool bIsOverlappingLocal;
+	TArray<AActor*> OverlappingActorsLocal;
+
+	GetOverlappingActors(OverlappingActorsLocal);
+
+	return OverlappingActorsLocal.Num() >= 1;
 }

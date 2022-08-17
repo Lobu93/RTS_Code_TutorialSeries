@@ -74,6 +74,14 @@ protected:
 
 	void PrimaryAction_Released();
 
+	void RotatePreviewLeft_Pressed();
+
+	void RotatePreviewLeft_Released();
+
+	void RotatePreviewRight_Pressed();
+
+	void RotatePreviewRight_Released();
+
 	// Cast references once for the entire code, reduce system drain.
 	void ReferenceCasts();
 
@@ -150,6 +158,8 @@ public:
 
 	float HoldingTime;
 
+	float ConstructionRotationRate = 30.0f;
+
 	// When mouse is pressed, the camera don't can move
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool bDisableCamMovement;
@@ -201,5 +211,5 @@ public:
 	void SpawnVehicleDebug();
 
 	void SetBuildingModeActive(bool bIsActive);
-
+       
 };

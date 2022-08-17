@@ -107,6 +107,12 @@ void ARTS_PlayerController::SetupInputComponent()
 	InputComponent->BindAction("PrimaryAction", IE_Pressed, this, &ARTS_PlayerController::PrimaryAction_Pressed);
 	InputComponent->BindAction("PrimaryAction", IE_Released, this, &ARTS_PlayerController::PrimaryAction_Released);
 
+	InputComponent->BindAction("RotatePreviewLeft", IE_Pressed, this, &ARTS_PlayerController::RotatePreviewLeft_Pressed);
+	InputComponent->BindAction("RotatePreviewLeft", IE_Released, this, &ARTS_PlayerController::RotatePreviewLeft_Released);
+
+	InputComponent->BindAction("RotatePreviewRight", IE_Pressed, this, &ARTS_PlayerController::RotatePreviewRight_Pressed);
+	InputComponent->BindAction("RotatePreviewRight", IE_Released, this, &ARTS_PlayerController::RotatePreviewRight_Released);
+
 	FInputActionKeyMapping SpawnUnitMapping("SpawnUnitAction", EKeys::V, 0, 0, 0, 0);
 	this->PlayerInput->AddActionMapping(SpawnUnitMapping);
 	InputComponent->BindAction("SpawnUnitAction", IE_Pressed, this, &ARTS_PlayerController::SpawnUnitDebug);
@@ -389,6 +395,48 @@ void ARTS_PlayerController::PrimaryAction_Released()
 
 		bIsHoldingInput = false;
 	}
+}
+
+void ARTS_PlayerController::RotatePreviewLeft_Pressed()
+{
+	bDisableCamMovement = true;
+
+	if (bIsBuildingModeActive && ConstructionPreviewRef != nullptr)
+	{
+		FRotator NewRotationLocal;
+
+		NewRotationLocal.Roll = ConstructionPreviewRef->GetActorRotation().Roll;
+		NewRotationLocal.Pitch = ConstructionPreviewRef->GetActorRotation().Pitch;
+		NewRotationLocal.Yaw = ConstructionPreviewRef->GetActorRotation().Yaw - ConstructionRotationRate;
+
+		ConstructionPreviewRef->SetActorRotation(NewRotationLocal);
+	}
+}
+
+void ARTS_PlayerController::RotatePreviewLeft_Released()
+{
+	bDisableCamMovement = false;
+}
+
+void ARTS_PlayerController::RotatePreviewRight_Pressed()
+{
+	bDisableCamMovement = true;
+
+	if (bIsBuildingModeActive && ConstructionPreviewRef != nullptr)
+	{
+		FRotator NewRotationLocal;
+
+		NewRotationLocal.Roll = ConstructionPreviewRef->GetActorRotation().Roll;
+		NewRotationLocal.Pitch = ConstructionPreviewRef->GetActorRotation().Pitch;
+		NewRotationLocal.Yaw = ConstructionPreviewRef->GetActorRotation().Yaw + ConstructionRotationRate;
+
+		ConstructionPreviewRef->SetActorRotation(NewRotationLocal);
+	}
+}
+
+void ARTS_PlayerController::RotatePreviewRight_Released()
+{
+	bDisableCamMovement = false;
 }
 
 void ARTS_PlayerController::ReferenceCasts()

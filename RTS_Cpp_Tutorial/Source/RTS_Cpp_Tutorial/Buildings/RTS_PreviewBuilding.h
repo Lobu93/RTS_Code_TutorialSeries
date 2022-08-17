@@ -42,6 +42,12 @@ public:
 
 	TSubclassOf<ARTS_BuildingMaster> BuildingClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cosntruction")
+	class UMaterialInterface* Preview_Material_Instance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cosntruction")
+	class UMaterialInterface* PreviewBad_Material_Instance;
+
 	FTransform EmptyTransform = FTransform();
 	FVector CursorWorldPosition;
 	int32 SnapValue = 100;
@@ -60,4 +66,6 @@ public:
 	void GetCursorPosition(FVector CursorLocationIn);
 
 	FVector GridSnaps();
+
+	bool CheckOverlap();
 };
